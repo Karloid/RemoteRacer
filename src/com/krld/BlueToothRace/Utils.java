@@ -3,6 +3,7 @@ package com.krld.BlueToothRace;
 import android.graphics.*;
 import android.content.res.*;
 import android.graphics.BitmapFactory.*;
+import com.krld.BlueToothRace.model.Point;
 
 public class Utils {
 
@@ -33,7 +34,7 @@ public class Utils {
 
     }
 
-    public static double getDistance(Point point1, Point point2) {
+    public static double getDistance(com.krld.BlueToothRace.model.Point point1, Point point2) {
         return getDistance(point1.getX(), point1.getY(), point2.getX(), point2.getY());
     }
 

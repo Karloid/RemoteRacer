@@ -1,11 +1,18 @@
-package com.krld.BlueToothRace;
+package com.krld.BlueToothRace.activitys;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import com.krld.BlueToothRace.ProtocolMessages;
+import com.krld.BlueToothRace.model.Car;
+import com.krld.BlueToothRace.views.GameView;
+import com.krld.BlueToothRace.R;
+import com.krld.BlueToothRace.Utils;
+import com.krld.BlueToothRace.model.Game;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +32,7 @@ public class ServerActivity extends Activity {
     private Thread runner;
     private ServerSocket server;
     private Runnable serverRunnable;
+    private Thread serverSocketThread;
 
     /**
      * Called when the activity is first created.
@@ -45,39 +53,51 @@ public class ServerActivity extends Activity {
         ImageButton turnLeftButton = (ImageButton) findViewById(R.id.turnLeftButton);
         ImageButton turnRightButton = (ImageButton) findViewById(R.id.turnRightButton);
 
-        startSocketServer();
-        increaseSpeedButton.setOnClickListener(new View.OnClickListener() {
+
+        increaseSpeedButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                if (view.isPressed()) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     game.getCar().increaseSpeed();
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    game.getCar().stillSpeed();
                 }
+                return false;
             }
         });
 
-        decreaseSpeedButton.setOnClickListener(new View.OnClickListener() {
+        decreaseSpeedButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                if (view.isPressed()) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     game.getCar().decreaseSpeed();
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    game.getCar().stillSpeed();
                 }
+                return false;
             }
         });
 
-        turnLeftButton.setOnClickListener(new View.OnClickListener() {
+        turnLeftButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                if (view.isPressed()) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     game.getCar().turnLeft();
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    game.getCar().noTurn();
                 }
+                return false;
             }
         });
-        turnRightButton.setOnClickListener(new View.OnClickListener() {
+        turnRightButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                if (view.isPressed()) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     game.getCar().turnRight();
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    game.getCar().noTurn();
                 }
+                return false;
             }
         });
 
@@ -87,8 +107,10 @@ public class ServerActivity extends Activity {
     }
 
     private void startSocketServer() {
+
         serverRunnable = new ServerRunnable();
-        new Thread(serverRunnable).start();
+        serverSocketThread = new Thread(serverRunnable);
+        serverSocketThread.start();
     }
 
     private void startRunnerThread() {
@@ -122,12 +144,19 @@ public class ServerActivity extends Activity {
     protected void onPause() {
         super.onPause();
         this.paused = true;
+        stopSocketServer();
+    }
+
+    private void stopSocketServer() {
+        serverSocketThread.interrupt();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         this.paused = false;
+        startSocketServer();
     }
 
     private class ServerRunnable implements Runnable {
@@ -171,17 +200,19 @@ public class ServerActivity extends Activity {
 
                     Log.i(TAG, "Received message: " + str);
                     if (str != null) {
-                        if (str.equals("w")) {
-                            game.getCar().increaseSpeed();
-                        }
-                        if (str.equals("s")) {
-                            game.getCar().decreaseSpeed();
-                        }
-                        if (str.equals("a")) {
-                            game.getCar().turnLeft();
-                        }
-                        if (str.equals("d")) {
-                            game.getCar().turnRight();
+                        Car car = game.getRemoteCar();
+                        if (str.equals(ProtocolMessages.INCREASE_SPEED)) {
+                            car.increaseSpeed();
+                        } else if (str.equals(ProtocolMessages.STILL_SPEED)) {
+                            car.stillSpeed();
+                        } else if (str.equals(ProtocolMessages.DECREASE_SPEED)) {
+                            car.decreaseSpeed();
+                        } else if (str.equals(ProtocolMessages.TURN_LEFT)) {
+                            car.turnLeft();
+                        } else if (str.equals(ProtocolMessages.TURN_RIGHT)) {
+                            car.turnRight();
+                        } else if (str.equals(ProtocolMessages.NO_TURN)) {
+                            car.noTurn();
                         }
                     }
                 }

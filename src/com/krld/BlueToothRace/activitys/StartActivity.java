@@ -1,10 +1,11 @@
-package com.krld.BlueToothRace;
+package com.krld.BlueToothRace.activitys;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import com.krld.BlueToothRace.R;
 
 /**
  * Created by 3 on 02.02.14.

@@ -1,4 +1,4 @@
-package com.krld.BlueToothRace;
+package com.krld.BlueToothRace.model;
 
 import android.graphics.Color;
 
@@ -6,15 +6,15 @@ import android.graphics.Color;
  * Created by 3 on 28.01.14.
  */
 public class Car {
-    private static final double DEFAULT_SPEED_INCREASE_AMOUNT = 3;
+    private static final double DEFAULT_SPEED_INCREASE_AMOUNT = 2;
     private static final double DEFAULT_TURN_AMOUNT = 8;
     public static final float REDUCE_TURN_AMOUNT = 0.8f;
     public static final int SPEED_LIMIT_ZERO = 1;
     private static final double MAX_SPEED_FORWARD = 12;
     private static final double MAX_SPEED_BACKWARD = -5;
-    private static final double MAX_TURN_AMOUNT = 5;
+    private static final double MAX_TURN_AMOUNT = 2;
     private double turnAmountDelta;
-    Point pos;
+    public Point pos;
     private double speed;
     private int color;
     private float angle;
@@ -65,10 +65,8 @@ public class Car {
     private void calculateSpeed() {
         if (speedState == SpeedStates.INCREASE) {
             speed += speedIncreaseAmount;
-            speedState = SpeedStates.STILL;
         } else if (speedState == SpeedStates.DECREASE) {
             speed -= speedDecreaseAmount;
-            speedState = SpeedStates.STILL;
         }
         if (speed > MAX_SPEED_FORWARD) {
             speed = MAX_SPEED_FORWARD;
@@ -80,20 +78,29 @@ public class Car {
 
 
     private void calculateAngle() {
+
         if (turnState == TurnStates.LEFT) {
             turnAmountDelta -= turnAmount;
-            turnState = TurnStates.STILL;
         } else if (turnState == TurnStates.RIGHT) {
             turnAmountDelta += turnAmount;
-            turnState = TurnStates.STILL;
         }
+
+        if (turnAmountDelta != 0) {
+            turnAmountDelta = turnAmountDelta * (1 - Math.pow(Math.abs(speed) / MAX_SPEED_FORWARD, 3) * 0.5f);
+        }
+
         if (turnAmountDelta > MAX_TURN_AMOUNT) {
             turnAmount = MAX_TURN_AMOUNT;
         } else if (turnAmount < -MAX_TURN_AMOUNT) {
             turnAmount = -MAX_TURN_AMOUNT;
         }
-        angle += turnAmountDelta;
 
+
+        if (speed == 0) {
+            turnAmountDelta = 0;
+        }
+
+        angle += turnAmountDelta;
     }
 
     public int getColor() {
@@ -127,5 +134,14 @@ public class Car {
 
     public void turnLeft() {
         turnState = TurnStates.LEFT;
+    }
+
+
+    public void stillSpeed() {
+        speedState = SpeedStates.STILL;
+    }
+
+    public void noTurn() {
+        turnState = TurnStates.STILL;
     }
 }

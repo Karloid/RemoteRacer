@@ -1,4 +1,4 @@
-package com.krld.BlueToothRace;
+package com.krld.BlueToothRace.model;
 
 /**
  * Created by 3 on 02.02.14.

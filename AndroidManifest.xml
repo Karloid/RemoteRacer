@@ -10,7 +10,7 @@
     <application android:label="@string/app_name" android:icon="@drawable/car_big"
                  android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             >
-        <activity android:name="StartActivity"
+        <activity android:name=".activitys.StartActivity"
                   android:label="Гоночки"
                   android:screenOrientation="portrait">
             <intent-filter>
@@ -18,10 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ServerActivity"
+        <activity android:name=".activitys.ServerActivity"
                   android:label="Гоночки"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".ClientActivity"
+        <activity android:name=".activitys.ClientActivity"
                   android:label="Гоночки"
                   android:screenOrientation="portrait">
         </activity>

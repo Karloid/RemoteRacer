@@ -1,9 +1,11 @@
-package com.krld.BlueToothRace;
+package com.krld.BlueToothRace.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.View;
+import com.krld.BlueToothRace.WorldRenderer;
+import com.krld.BlueToothRace.model.Game;
 
 /**
  * Created by 3 on 28.01.14.
