@@ -13,6 +13,7 @@ public class Car {
     private static final double MAX_SPEED_FORWARD = 12;
     private static final double MAX_SPEED_BACKWARD = -5;
     private static final double MAX_TURN_AMOUNT = 2;
+    private final Game context;
     private double turnAmountDelta;
     public Point pos;
     private double speed;
@@ -24,7 +25,8 @@ public class Car {
     private TurnStates turnState;
     private double turnAmount;
 
-    public Car(int x, int y) {
+    public Car(int x, int y, Game context) {
+        this.context = context;
         pos = new Point(x, y);
         angle = 0;
         speed = 10;

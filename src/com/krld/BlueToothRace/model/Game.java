@@ -1,5 +1,8 @@
 package com.krld.BlueToothRace.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by 3 on 28.01.14.
  */
@@ -8,14 +11,14 @@ public class Game {
     public static final int FIELD_SIZE = 50;
     private final int cellSize = 64;
     public TileType[][] tiles;
-    private Car remoteCar;
 
-    private Car car;
+    private Car localCar;
+    private List<Car> cars;
 
     public Game() {
-        setCar(new Car(0, 0));
-        setRemoteCar(new Car(0, 100));
+        setLocalCar(new Car(0, 0, this));
         generateTiles();
+        cars = new ArrayList<Car>();
     }
 
     private void generateTiles() {
@@ -36,17 +39,19 @@ public class Game {
         }
     }
 
-    public Car getCar() {
-        return car;
+    public Car getLocalCar() {
+        return localCar;
     }
 
-    public void setCar(Car car) {
-        this.car = car;
+    public void setLocalCar(Car localCar) {
+        this.localCar = localCar;
     }
 
     public void update() {
-        car.update();
-        remoteCar.update();
+        localCar.update();
+        for (Car car : cars) {
+            car.update();
+        }
     }
 
     public TileType[][] getTiles() {
@@ -57,11 +62,20 @@ public class Game {
         return cellSize;
     }
 
-    public Car getRemoteCar() {
-        return remoteCar;
+
+
+    public Car createNewCar() {
+
+        Car car = new Car(localCar.pos.getX(), localCar.pos.getY(), this);
+        cars.add(car);
+        return car;
     }
 
-    public void setRemoteCar(Car remoteCar) {
-        this.remoteCar = remoteCar;
+    public List<Car> getCars() {
+        return cars;
+    }
+
+    public void setCars(List<Car> cars) {
+        this.cars = cars;
     }
 }

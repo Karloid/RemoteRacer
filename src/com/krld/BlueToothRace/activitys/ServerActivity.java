@@ -44,9 +44,18 @@ public class ServerActivity extends Activity {
         final LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
         game = new Game();
         gameView = new GameView(this, game);
+
         layout.addView(gameView);
         gameView.setLayoutParams(new LinearLayout.LayoutParams(VIEW_WIDTH, VIEW_HEIGHT));
 
+        initControlButtons();
+
+        paused = false;
+
+        startRunnerThread();
+    }
+
+    private void initControlButtons() {
         ImageButton increaseSpeedButton = (ImageButton) findViewById(R.id.increaseSpeedButton);
         ImageButton decreaseSpeedButton = (ImageButton) findViewById(R.id.decreaseSpeedButton);
 
@@ -58,9 +67,9 @@ public class ServerActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    game.getCar().increaseSpeed();
+                    game.getLocalCar().increaseSpeed();
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    game.getCar().stillSpeed();
+                    game.getLocalCar().stillSpeed();
                 }
                 return false;
             }
@@ -70,9 +79,9 @@ public class ServerActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    game.getCar().decreaseSpeed();
+                    game.getLocalCar().decreaseSpeed();
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    game.getCar().stillSpeed();
+                    game.getLocalCar().stillSpeed();
                 }
                 return false;
             }
@@ -82,9 +91,9 @@ public class ServerActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    game.getCar().turnLeft();
+                    game.getLocalCar().turnLeft();
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    game.getCar().noTurn();
+                    game.getLocalCar().noTurn();
                 }
                 return false;
             }
@@ -93,17 +102,13 @@ public class ServerActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    game.getCar().turnRight();
+                    game.getLocalCar().turnRight();
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    game.getCar().noTurn();
+                    game.getLocalCar().noTurn();
                 }
                 return false;
             }
         });
-
-        paused = false;
-
-        startRunnerThread();
     }
 
     private void startSocketServer() {
@@ -191,6 +196,10 @@ public class ServerActivity extends Activity {
         public void run() {
             try {
                 Log.i(TAG, "New input connection handler!");
+
+                Car car = game.createNewCar();
+
+
                 BufferedReader in = null;
 
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -198,9 +207,10 @@ public class ServerActivity extends Activity {
                 while (Utils.userIsAMonkey()) {
                     String str = in.readLine();
 
-                    Log.i(TAG, "Received message: " + str);
+
                     if (str != null) {
-                        Car car = game.getRemoteCar();
+                        Log.i(TAG, "Received message: " + str);
+
                         if (str.equals(ProtocolMessages.INCREASE_SPEED)) {
                             car.increaseSpeed();
                         } else if (str.equals(ProtocolMessages.STILL_SPEED)) {
@@ -214,11 +224,13 @@ public class ServerActivity extends Activity {
                         } else if (str.equals(ProtocolMessages.NO_TURN)) {
                             car.noTurn();
                         }
+                    } else {
+                        break;
                     }
                 }
                 in.close();
                 socket.close();
-                Log.i(TAG, "Connections closed");
+                Log.i(TAG, "Connection closed");
             } catch (IOException e) {
                 e.printStackTrace();
             }

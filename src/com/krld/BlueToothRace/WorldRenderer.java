@@ -25,11 +25,15 @@ public class WorldRenderer {
     private static int viewHeight;
 
     public static void drawGame(Game game, Canvas canvas, Paint paint) {
-        Point cameraCenterPos = game.getCar().pos;
+        Point cameraCenterPos = game.getLocalCar().pos;
         drawTiles(game, canvas, paint, cameraCenterPos);
-        drawLineBetweenCars(game.getCar(), game.getRemoteCar(), cameraCenterPos, canvas, paint);
-        drawCar(game.getCar(), canvas, paint, cameraCenterPos, blueCarSprite);
-        drawCar(game.getRemoteCar(), canvas, paint, cameraCenterPos, redCarSprite);
+        for (Car car : game.getCars()) {
+            drawLineBetweenCars(game.getLocalCar(), car, cameraCenterPos, canvas, paint);
+        }
+        drawCar(game.getLocalCar(), canvas, paint, cameraCenterPos, blueCarSprite);
+        for (Car car : game.getCars()) {
+            drawCar(car, canvas, paint, cameraCenterPos, redCarSprite);
+        }
     }
 
     private static void drawLineBetweenCars(Car car1, Car car2, Point cameraCenterPos, Canvas canvas, Paint paint) {
