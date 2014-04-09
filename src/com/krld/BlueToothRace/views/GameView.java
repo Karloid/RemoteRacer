@@ -26,10 +26,10 @@ public class GameView extends View {
         super.onDraw(canvas);
         if (paint == null)
             paint = new Paint();
-        drawCar(canvas, paint);
+        drawGame(canvas, paint);
     }
 
-    private void drawCar(Canvas canvas, Paint paint) {
+    private void drawGame(Canvas canvas, Paint paint) {
         WorldRenderer.drawGame(game, canvas, paint);
 
     }

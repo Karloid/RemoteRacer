@@ -11,4 +11,5 @@ public class ProtocolMessages {
     public static final String NO_TURN = "no_turn";
     public static final String TURN_LEFT = "turn_left";
     public static final String TURN_RIGHT = "turn_right";
+    public static final String CREATE_CAR = "create_car";
 }

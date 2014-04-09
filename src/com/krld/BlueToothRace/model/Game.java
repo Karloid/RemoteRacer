@@ -14,6 +14,7 @@ public class Game {
 
     private Car localCar;
     private List<Car> cars;
+    private long id = 0;
 
     public Game() {
         setLocalCar(new Car(0, 0, this));
@@ -77,5 +78,10 @@ public class Game {
 
     public void setCars(List<Car> cars) {
         this.cars = cars;
+    }
+
+    public long getNextEntityId() {
+        id++;
+        return id;
     }
 }

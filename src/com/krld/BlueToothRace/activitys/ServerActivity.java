@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerActivity extends Activity {
     public static final int DELAY = 30;
@@ -30,9 +32,10 @@ public class ServerActivity extends Activity {
     private boolean paused;
     private GameView gameView;
     private Thread runner;
-    private ServerSocket server;
+    private ServerSocket serverSocket;
     private Runnable serverRunnable;
     private Thread serverSocketThread;
+    private static List<Thread> connections;
 
     /**
      * Called when the activity is first created.
@@ -52,7 +55,10 @@ public class ServerActivity extends Activity {
 
         paused = false;
 
-        startRunnerThread();
+        startSocketServer();
+
+        startServerRunnerThread();
+
     }
 
     private void initControlButtons() {
@@ -118,7 +124,7 @@ public class ServerActivity extends Activity {
         serverSocketThread.start();
     }
 
-    private void startRunnerThread() {
+    private void startServerRunnerThread() {
         runner = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -149,7 +155,7 @@ public class ServerActivity extends Activity {
     protected void onPause() {
         super.onPause();
         this.paused = true;
-        stopSocketServer();
+        //    stopSocketServer();
     }
 
     private void stopSocketServer() {
@@ -161,7 +167,6 @@ public class ServerActivity extends Activity {
     protected void onResume() {
         super.onResume();
         this.paused = false;
-        startSocketServer();
     }
 
     private class ServerRunnable implements Runnable {
@@ -169,18 +174,34 @@ public class ServerActivity extends Activity {
         @Override
         public void run() {
             try {
-                server = new ServerSocket(SERVER_SOCKETY_PORT);
-                Log.i(TAG, "Server socket started at: " + SERVER_SOCKETY_PORT);
+                if (serverSocket != null) {
+                    Log.d(TAG, " try close serverSocket!");
+                    serverSocket.close();
+                 //   serverSocket.
+                    Log.d(TAG, "serverSoscket is closed");
+                }
+                connections = new ArrayList<Thread>();
+                serverSocket = new ServerSocket(SERVER_SOCKETY_PORT);
+                Log.d(TAG, "Server socket started at: " + SERVER_SOCKETY_PORT);
 
                 while (true) {
                     Log.i(TAG, "waiting connections...: ");
-                    Socket socket = server.accept();
+                    Socket socket = serverSocket.accept();
                     Log.i(TAG, "get connection from: " + socket.getInetAddress());
-                    new Thread(new ConnectionHandler(socket)).start();
+                    //
+                    Thread connectionHandler = new Thread(new ConnectionHandler(socket));
+                    connections.add(connectionHandler);
+                    connectionHandler.start();
 
                 }
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
+                e.printStackTrace();
+                try {
+                    serverSocket.close();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
             }
         }
     }
@@ -188,28 +209,49 @@ public class ServerActivity extends Activity {
     private class ConnectionHandler implements Runnable {
         private final Socket socket;
 
+
+        private long id;
+
         public ConnectionHandler(Socket socket) {
             this.socket = socket;
+            id = -1;
+        }
+
+        public long getId() {
+            return id;
         }
 
         @Override
         public void run() {
             try {
-                Log.i(TAG, "New input connection handler!");
+                log("New input connection handler!");
 
-                Car car = game.createNewCar();
+                Car car = null;
 
 
                 BufferedReader in = null;
 
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+                while (true) {
+                    String str = in.readLine();
+                    if (str != null && str.equals(ProtocolMessages.CREATE_CAR)) {
+                        car = game.createNewCar();
+                        id = car.getId();
+                        log("Created car");
+                        break;
+                    } else {
+                        log("Break connection on wait user create car");
+                        break;
+                    }
+                }
+
                 while (Utils.userIsAMonkey()) {
                     String str = in.readLine();
 
 
                     if (str != null) {
-                        Log.i(TAG, "Received message: " + str);
+                        log("Received message: " + str);
 
                         if (str.equals(ProtocolMessages.INCREASE_SPEED)) {
                             car.increaseSpeed();
@@ -225,15 +267,20 @@ public class ServerActivity extends Activity {
                             car.noTurn();
                         }
                     } else {
+                        log("break connection on wait user next command");
                         break;
                     }
                 }
                 in.close();
                 socket.close();
-                Log.i(TAG, "Connection closed");
+                log("Connection closed");
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        private void log(String s) {
+            Log.d(ServerActivity.TAG, "ConnectionHandler " + id + " : " + s);
         }
     }
 

@@ -24,6 +24,7 @@ import java.util.Vector;
  * Created by 3 on 03.02.14.
  */
 public class ClientActivity extends Activity {
+    private static final String TAG = "MY_RACE";
     private EditText ipAdressText;
     private Socket socketClient;
     private ImageButton increaseSpeedButton;
@@ -88,11 +89,15 @@ public class ClientActivity extends Activity {
             @Override
             public void run() {
                 try {
-                    Log.i(ServerActivity.TAG, "Try connecting: " + ipAdressText.getText().toString());
-                    showToast("Try connecting: " + ipAdressText.getText().toString());
+                    if (socketClient != null && socketClient.isConnected()) {
+                        Log.d(TAG, "try close socketClient");
+                        socketClient.close();
+                    }
+                    Log.d(ServerActivity.TAG, "Try connecting: " + ipAdressText.getText().toString());
                     socketClient = new Socket(ipAdressText.getText().toString(), ServerActivity.SERVER_SOCKETY_PORT);
-                    Log.i(ServerActivity.TAG, "succesefull ");
-                    showToast("succesefull");
+                    Log.d(ServerActivity.TAG, "succesefull");
+                    sendMessage(ProtocolMessages.CREATE_CAR);
+                    Log.d(ServerActivity.TAG, "send create car request");
                 } catch (IOException e) {
                     Log.e(ServerActivity.TAG, "Error connecting: " + ipAdressText.getText().toString());
                     showToast("Error connecting: " + ipAdressText.getText().toString() + " " + e.getMessage());

@@ -14,6 +14,7 @@ public class Car {
     private static final double MAX_SPEED_BACKWARD = -5;
     private static final double MAX_TURN_AMOUNT = 2;
     private final Game context;
+    private final long id;
     private double turnAmountDelta;
     public Point pos;
     private double speed;
@@ -27,6 +28,8 @@ public class Car {
 
     public Car(int x, int y, Game context) {
         this.context = context;
+        id = context.getNextEntityId();
+
         pos = new Point(x, y);
         angle = 0;
         speed = 10;
@@ -145,5 +148,9 @@ public class Car {
 
     public void noTurn() {
         turnState = TurnStates.STILL;
+    }
+
+    public long getId() {
+        return id;
     }
 }
