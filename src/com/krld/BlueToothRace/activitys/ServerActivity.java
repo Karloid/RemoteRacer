@@ -28,13 +28,13 @@ public class ServerActivity extends Activity {
     public static final int VIEW_HEIGHT = 950;
     public static final int SERVER_SOCKETY_PORT = 7777;
     public static final String TAG = "MY_RACE";
-    private Game game;
     private boolean paused;
     private GameView gameView;
-    private Thread runner;
-    private ServerSocket serverSocket;
-    private Runnable serverRunnable;
-    private Thread serverSocketThread;
+    private static Game gameServer;
+    private static Thread runner;
+    private static ServerSocket serverSocket;
+    private static Runnable serverRunnable;
+    private static Thread serverSocketThread;
     private static List<Thread> connections;
 
     /**
@@ -44,9 +44,17 @@ public class ServerActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server);
+
+        if (gameServer == null) {
+            gameServer = new Game();
+        }
+        gameView = new GameView(this, gameServer);
+
+        startSocketServer();
+        startGameLoopThread();
+
+
         final LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
-        game = new Game();
-        gameView = new GameView(this, game);
 
         layout.addView(gameView);
         gameView.setLayoutParams(new LinearLayout.LayoutParams(VIEW_WIDTH, VIEW_HEIGHT));
@@ -55,9 +63,6 @@ public class ServerActivity extends Activity {
 
         paused = false;
 
-        startSocketServer();
-
-        startServerRunnerThread();
 
     }
 
@@ -73,9 +78,9 @@ public class ServerActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    game.getLocalCar().increaseSpeed();
+                    gameServer.getLocalCar().increaseSpeed();
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    game.getLocalCar().stillSpeed();
+                    gameServer.getLocalCar().stillSpeed();
                 }
                 return false;
             }
@@ -85,9 +90,9 @@ public class ServerActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    game.getLocalCar().decreaseSpeed();
+                    gameServer.getLocalCar().decreaseSpeed();
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    game.getLocalCar().stillSpeed();
+                    gameServer.getLocalCar().stillSpeed();
                 }
                 return false;
             }
@@ -97,9 +102,9 @@ public class ServerActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    game.getLocalCar().turnLeft();
+                    gameServer.getLocalCar().turnLeft();
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    game.getLocalCar().noTurn();
+                    gameServer.getLocalCar().noTurn();
                 }
                 return false;
             }
@@ -108,9 +113,9 @@ public class ServerActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    game.getLocalCar().turnRight();
+                    gameServer.getLocalCar().turnRight();
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    game.getLocalCar().noTurn();
+                    gameServer.getLocalCar().noTurn();
                 }
                 return false;
             }
@@ -119,12 +124,14 @@ public class ServerActivity extends Activity {
 
     private void startSocketServer() {
 
-        serverRunnable = new ServerRunnable();
-        serverSocketThread = new Thread(serverRunnable);
-        serverSocketThread.start();
+        if (serverSocketThread == null) {
+            serverRunnable = new ServerRunnable();
+            serverSocketThread = new Thread(serverRunnable);
+            serverSocketThread.start();
+        }
     }
 
-    private void startServerRunnerThread() {
+    private void startGameLoopThread() {
         runner = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -137,7 +144,7 @@ public class ServerActivity extends Activity {
                             e.printStackTrace();
                         }
                     }
-                    game.update();
+                    gameServer.update();
                     gameView.postInvalidate();
                     //Log.e("CAR", "UPDATE");
                     try {
@@ -177,7 +184,7 @@ public class ServerActivity extends Activity {
                 if (serverSocket != null) {
                     Log.d(TAG, " try close serverSocket!");
                     serverSocket.close();
-                 //   serverSocket.
+                    //   serverSocket.
                     Log.d(TAG, "serverSoscket is closed");
                 }
                 connections = new ArrayList<Thread>();
@@ -236,7 +243,7 @@ public class ServerActivity extends Activity {
                 while (true) {
                     String str = in.readLine();
                     if (str != null && str.equals(ProtocolMessages.CREATE_CAR)) {
-                        car = game.createNewCar();
+                        car = gameServer.createNewCar();
                         id = car.getId();
                         log("Created car");
                         break;

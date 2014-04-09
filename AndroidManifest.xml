@@ -23,6 +23,9 @@
                   android:screenOrientation="portrait"/>
         <activity android:name=".activitys.ClientActivity"
                   android:label="Гоночки"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".activitys.FindServerActivity"
+                  android:label="Гоночки"
                   android:screenOrientation="portrait">
         </activity>
     </application>

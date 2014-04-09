@@ -29,7 +29,7 @@ public class StartActivity extends Activity {
         startClient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(StartActivity.this, ClientActivity.class);
+                Intent myIntent = new Intent(StartActivity.this, FindServerActivity.class);
                 myIntent.putExtra("key", "value");
                 StartActivity.this.startActivity(myIntent);
             }
