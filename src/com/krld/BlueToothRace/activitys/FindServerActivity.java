@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
-import com.krld.BlueToothRace.ProtocolMessages;
 import com.krld.BlueToothRace.R;
 
 import java.io.*;
@@ -80,9 +78,8 @@ public class FindServerActivity extends Activity {
     }
 
     private void connectToServer() {
-        new AsyncConnectServer().execute();
+        new AsyncConnectToServer().execute(ipAdressText.getText().toString());
     }
-
 
 
     private void findLocalServers() {
@@ -91,10 +88,11 @@ public class FindServerActivity extends Activity {
     }
 
 
-    private class AsyncConnectServer extends AsyncTask<Void, Void, Socket> {
+    public class AsyncConnectToServer extends AsyncTask<String, Void, Socket> {
 
         @Override
-        protected Socket doInBackground(Void... voids) {
+        protected Socket doInBackground(String... strings) {
+            String ip = strings[0];
 
             Socket socket = null;
             try {
@@ -102,13 +100,13 @@ public class FindServerActivity extends Activity {
                     Log.d(TAG, "try close socketClient");
                     socketClient.close();
                 }
-                Log.d(ServerActivity.TAG, "Try connecting: " + ipAdressText.getText().toString());
-                socket = new Socket(ipAdressText.getText().toString(), ServerActivity.SERVER_SOCKETY_PORT);
+                Log.d(ServerActivity.TAG, "Try connecting: " + ip);
+                socket = new Socket(ip, ServerActivity.SERVER_SOCKETY_PORT);
                 Log.d(ServerActivity.TAG, "succesefull");
                 Log.d(ServerActivity.TAG, "send create car request");
             } catch (IOException e) {
-                Log.e(ServerActivity.TAG, "Error connecting: " + ipAdressText.getText().toString());
-                showToast("Error connecting: " + ipAdressText.getText().toString() + " " + e.getMessage());
+                Log.e(ServerActivity.TAG, "Error connecting: " + ip);
+              // showToast("Error connecting: " + ip + " " + e.getMessage());
                 e.printStackTrace();
             }
             return socket;
@@ -116,16 +114,17 @@ public class FindServerActivity extends Activity {
 
         @Override
         protected void onPostExecute(Socket socket) {
-           if (socket != null) {
-               Intent myIntent = new Intent(FindServerActivity.this, ClientActivity.class);
-              // myIntent.putExtra("socket", socket);
-               FindServerActivity.connectedSocket = socket;
-               showToast("Connected");
-               FindServerActivity.this.startActivity(myIntent);
+            if (socket != null) {
+                Intent myIntent = new Intent(FindServerActivity.this, ClientActivity.class);
+                myIntent.putExtra("from", "FindServerActivity");
+                FindServerActivity.connectedSocket = socket;
+                showToast("Connected");
+                FindServerActivity.this.startActivity(myIntent);
 
-           }
+            }
         }
     }
+
     private class AsyncFindLocalServers extends AsyncTask<Void, Void, List<String>> {
         @Override
         protected void onPreExecute() {

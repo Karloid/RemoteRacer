@@ -1,125 +1,58 @@
-package com.krld.BlueToothRace.activitys;
+package com.krld.BlueToothRace;
 
-import android.app.Activity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import com.krld.BlueToothRace.ProtocolMessages;
+import com.google.gson.Gson;
+import com.krld.BlueToothRace.activitys.ServerActivity;
 import com.krld.BlueToothRace.model.Car;
-import com.krld.BlueToothRace.views.GameView;
-import com.krld.BlueToothRace.R;
-import com.krld.BlueToothRace.Utils;
 import com.krld.BlueToothRace.model.Game;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class ServerActivity extends Activity {
+/**
+ * Created by Andrey on 4/10/2014.
+ */
+public class GameServer {
+
     public static final int DELAY = 30;
     public static final int VIEW_WIDTH = 760;
     public static final int VIEW_HEIGHT = 950;
     public static final int SERVER_SOCKETY_PORT = 7777;
     public static final String TAG = "MY_RACE";
     private boolean paused;
-    private GameView gameView;
-    private static Game gameServer;
+    private static Game gameMain;
     private static Thread runner;
     private static ServerSocket serverSocket;
     private static Runnable serverRunnable;
     private static Thread serverSocketThread;
     private static List<Thread> connections;
 
-    /**
-     * Called when the activity is first created.
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.server);
+    public Socket getLocalSocket() {
+        return null;
 
-        if (gameServer == null) {
-            gameServer = new Game();
+    }
+
+
+    public void init() {
+
+        if (gameMain == null) {
+            gameMain = new Game();
         }
-        gameView = new GameView(this, gameServer);
 
         startSocketServer();
         startGameLoopThread();
 
 
-        final LinearLayout layout = (LinearLayout) findViewById(R.id.clientlayout); // error
-
-        layout.addView(gameView);
-        gameView.setLayoutParams(new LinearLayout.LayoutParams(VIEW_WIDTH, VIEW_HEIGHT));
-
-        initControlButtons();
-
         paused = false;
-
 
     }
 
-    private void initControlButtons() {
-        ImageButton increaseSpeedButton = (ImageButton) findViewById(R.id.increaseSpeedButton);
-        ImageButton decreaseSpeedButton = (ImageButton) findViewById(R.id.decreaseSpeedButton);
+    public void run() {
 
-        ImageButton turnLeftButton = (ImageButton) findViewById(R.id.turnLeftButton);
-        ImageButton turnRightButton = (ImageButton) findViewById(R.id.turnRightButton);
-
-
-        increaseSpeedButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    gameServer.getLocalCar().increaseSpeed();
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    gameServer.getLocalCar().stillSpeed();
-                }
-                return false;
-            }
-        });
-
-        decreaseSpeedButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    gameServer.getLocalCar().decreaseSpeed();
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    gameServer.getLocalCar().stillSpeed();
-                }
-                return false;
-            }
-        });
-
-        turnLeftButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    gameServer.getLocalCar().turnLeft();
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    gameServer.getLocalCar().noTurn();
-                }
-                return false;
-            }
-        });
-        turnRightButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    gameServer.getLocalCar().turnRight();
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    gameServer.getLocalCar().noTurn();
-                }
-                return false;
-            }
-        });
     }
 
     private void startSocketServer() {
@@ -144,8 +77,7 @@ public class ServerActivity extends Activity {
                             e.printStackTrace();
                         }
                     }
-                    gameServer.update();
-                    gameView.postInvalidate();
+                    gameMain.update();
                     //Log.e("CAR", "UPDATE");
                     try {
                         Thread.sleep(DELAY);
@@ -156,24 +88,6 @@ public class ServerActivity extends Activity {
             }
         });
         runner.start();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        this.paused = true;
-        //    stopSocketServer();
-    }
-
-    private void stopSocketServer() {
-        serverSocketThread.interrupt();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        this.paused = false;
     }
 
     private class ServerRunnable implements Runnable {
@@ -218,6 +132,7 @@ public class ServerActivity extends Activity {
 
 
         private long id;
+        private BufferedWriter out;
 
         public ConnectionHandler(Socket socket) {
             this.socket = socket;
@@ -243,7 +158,7 @@ public class ServerActivity extends Activity {
                 while (true) {
                     String str = in.readLine();
                     if (str != null && str.equals(ProtocolMessages.CLIENT_REQUEST_CREATE_CAR)) {
-                        car = gameServer.createNewCar();
+                        car = gameMain.createNewCar();
                         id = car.getId();
                         log("Created car");
                         break;
@@ -253,9 +168,9 @@ public class ServerActivity extends Activity {
                     }
                 }
 
-                while (Utils.userIsAMonkey()) {
+                while (true) {
                     String str = in.readLine();
-
+                    sendMessage("OK");
 
                     if (str != null) {
                         log("Received message: " + str);
@@ -272,6 +187,8 @@ public class ServerActivity extends Activity {
                             car.turnRight();
                         } else if (str.equals(ProtocolMessages.NO_TURN)) {
                             car.noTurn();
+                        } else if (str.equals(ProtocolMessages.CLIENT_REQUEST_CARS)) {
+                            sendCarsToClient(car);
                         }
                     } else {
                         log("break connection on wait user next command");
@@ -286,10 +203,49 @@ public class ServerActivity extends Activity {
             }
         }
 
+        private void sendCarsToClient(Car car) {
+            Gson gson = new Gson();
+            String message;
+            message = "{";
+            message += " \"" + ProtocolMessages.HEADER + "\" : \"" + ProtocolMessages.CLIENT_REQUEST_CARS + "\",";
+            message += " \"" + ProtocolMessages.CARS + "\" : ";
+            ArrayList<HashMap<String, Object>> cars = new ArrayList<HashMap<String, Object>>();
+            for (Car itCar : gameMain.getCars()) {
+                HashMap<String, Object> carParams = new HashMap<String, Object>();
+                carParams.put("id", itCar.getId());
+                carParams.put("x", itCar.pos.getX());
+                carParams.put("y", itCar.pos.getY());
+                cars.add(carParams);
+
+            }
+            message += gson.toJson(cars);
+            message += "}";
+            sendMessage(message);
+        }
+
         private void log(String s) {
             Log.d(ServerActivity.TAG, "ConnectionHandler " + id + " : " + s);
         }
-    }
 
+        private void sendMessage(String message) {
+            Log.i(ServerActivity.TAG, "Try send message: " + message);
+            if (socket != null && !socket.isClosed()) {
+                // BufferedWriter out = null;
+                try {
+                    Log.e(ServerActivity.TAG, "Try send: " + message + " to socket");
+                    if (out == null) {
+                        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                    }
+                    out.append(message + "\n");
+                    out.flush();
+                    //           out.close();
+                } catch (IOException e) {
+                    Log.e(ServerActivity.TAG, "Send message FAILED:" + e.getMessage());
+                }
+            } else {
+                Log.e(ServerActivity.TAG, " socket is null");
+            }
+        }
+    }
 
 }
