@@ -14,7 +14,7 @@ public class Car {
     private static final double MAX_SPEED_BACKWARD = -5;
     private static final double MAX_TURN_AMOUNT = 2;
     private final Game context;
-    private final long id;
+    private long id;
     private double turnAmountDelta;
     public Point pos;
     private double speed;
@@ -152,5 +152,41 @@ public class Car {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public double getTurnAmount() {
+        return turnAmount;
+    }
+
+    public SpeedStates getSpeedState() {
+        return speedState;
+    }
+
+    public TurnStates getTurnState() {
+        return turnState;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public void setTurnAmount(float turnAmount) {
+        this.turnAmount = turnAmount;
+    }
+
+    public void setSpeedState(SpeedStates speedState) {
+        this.speedState = speedState;
+    }
+
+    public void setTurnState(TurnStates turnState) {
+        this.turnState = turnState;
     }
 }

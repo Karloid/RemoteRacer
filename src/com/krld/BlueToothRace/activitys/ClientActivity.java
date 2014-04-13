@@ -7,13 +7,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import com.google.gson.Gson;
 import com.krld.BlueToothRace.ProtocolMessages;
 import com.krld.BlueToothRace.R;
-import com.krld.BlueToothRace.model.Game;
+import com.krld.BlueToothRace.model.*;
 import com.krld.BlueToothRace.views.GameView;
 
 import java.io.*;
+import java.net.PortUnreachableException;
 import java.net.Socket;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Andrey on 4/9/2014.
@@ -22,6 +26,8 @@ import java.net.Socket;
 
 public class ClientActivity extends Activity {
 
+    private static final long DELAY = 30;
+    private static final long SYNC_DELAY = 150;
     private ImageButton increaseSpeedButton;
     private ImageButton decreaseSpeedButton;
     private ImageButton turnLeftButton;
@@ -30,6 +36,12 @@ public class ClientActivity extends Activity {
     private ConnectionInputHandler connectionInputHandler;
     private Thread connectionInputHandlerThread;
     private BufferedWriter out;
+    private Game game;
+    private Thread localGameRunner;
+    private GameView gameView;
+    private boolean paused = false;
+    private Thread syncWithServerThread;
+    private long mainCarId;
 
 
     @Override
@@ -52,12 +64,69 @@ public class ClientActivity extends Activity {
         connectionInputHandlerThread = new Thread(connectionInputHandler);
         connectionInputHandlerThread.start();
 
+        startLocalGameLoop();
+        startSyncWithServerLoop();
 
+
+    }
+
+    private void startSyncWithServerLoop() {
+        syncWithServerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    if (paused) {
+                        try {
+                            Thread.sleep(1000);
+                            continue;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    sendMessage(ProtocolMessages.CLIENT_REQUEST_CARS);
+                    //Log.e("CAR", "UPDATE");
+                    try {
+                        Thread.sleep(SYNC_DELAY);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        syncWithServerThread.start();
+    }
+
+    private void startLocalGameLoop() {
+        localGameRunner = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    if (paused) {
+                        try {
+                            Thread.sleep(1000);
+                            continue;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    game.update();
+                    gameView.postInvalidate();
+                    //Log.e("CAR", "UPDATE");
+                    try {
+                        Thread.sleep(DELAY);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        localGameRunner.start();
     }
 
     private void initGameView() {
         final LinearLayout layout = (LinearLayout) findViewById(R.id.clientlayoutgameview);
-        View gameView = new GameView(this, new Game());
+        game = new Game();
+        gameView = new GameView(this, game);
         layout.addView(gameView);
         gameView.setLayoutParams(new LinearLayout.LayoutParams(ServerActivity.VIEW_WIDTH, ServerActivity.VIEW_HEIGHT));
     }
@@ -155,7 +224,7 @@ public class ClientActivity extends Activity {
                 while (true) {
                     String str = in.readLine();
                     if (str != null) {
-                        Log.d(ServerActivity.TAG, "client received message: " + str);
+                        handleServerMessage(str);
                     } else {
                         Log.d(ServerActivity.TAG, "Break connection on str == null client handler");
                         break;
@@ -168,6 +237,75 @@ public class ClientActivity extends Activity {
                 e.printStackTrace();
             }
 
+        }
+
+        private void handleServerMessage(String str) {
+            Log.d(ServerActivity.TAG, "client received message: " + str);
+            if (str.equals(ProtocolMessages.OK)) {
+                return;
+            }
+            Map root = new Gson().fromJson(str, Map.class);
+            String header = (String) root.get(ProtocolMessages.HEADER);
+            if (header.equals(ProtocolMessages.HEADER_GET_CAR)) {
+                handleCarsMessage(root);
+            } else if (header.equals(ProtocolMessages.HEADER_NEW_CAR)) {
+                handleNewCarMessage(root);
+            }
+        }
+
+        private void handleNewCarMessage(Map carMap) {
+            carMap = (Map) carMap.get(ProtocolMessages.CAR);
+            long carId = Math.round((Double) carMap.get("id"));
+            Integer x = ((Double) carMap.get("x")).intValue();
+            Integer y = ((Double) carMap.get("y")).intValue();
+
+            double speed = (Double)carMap.get(ProtocolMessages.CAR_SPEED);
+            double angle = ((Double)carMap.get(ProtocolMessages.CAR_ANGLE));
+            double turnAmount = (Double)carMap.get(ProtocolMessages.CAR_TURN_AMOUNT);
+
+            Car mainCar = new Car(x, y, game);
+            mainCar.setId(carId);
+            mainCar.setSpeed(speed);
+            mainCar.setAngle((float) angle);
+            mainCar.setTurnAmount((float) turnAmount);
+            mainCar.setSpeedState(SpeedStates.valueOf((String) carMap.get(ProtocolMessages.CAR_SPEED_STATE)));
+            mainCar.setTurnState(TurnStates.valueOf((String) carMap.get(ProtocolMessages.CAR_TURN_STATE)));
+            mainCarId = mainCar.getId();
+            game.addNewCarFromServer(mainCar);
+            game.setMainCar(mainCar);
+        }
+
+        private void handleCarsMessage(Map root) {
+            for (Map carMap : (List<Map>) root.get(ProtocolMessages.CARS)) {
+                long carId = Math.round((Double) carMap.get("id"));
+                Car car = game.getCarById(carId);
+                Integer x = ((Double) carMap.get("x")).intValue();
+                Integer y = ((Double) carMap.get("y")).intValue();
+
+                double speed = (Double)carMap.get(ProtocolMessages.CAR_SPEED);
+                double angle = ((Double)carMap.get(ProtocolMessages.CAR_ANGLE));
+                double turnAmount = (Double)carMap.get(ProtocolMessages.CAR_TURN_AMOUNT);
+
+                if (car != null) {
+                    car.pos = new Point(x, y);
+                    car.setSpeed(speed);
+                    car.setAngle((float) angle);
+                    car.setTurnAmount((float) turnAmount);
+                    car.setSpeedState(SpeedStates.valueOf((String) carMap.get(ProtocolMessages.CAR_SPEED_STATE)));
+                    car.setTurnState(TurnStates.valueOf((String) carMap.get(ProtocolMessages.CAR_TURN_STATE)));
+                } else {
+                    car = new Car(x, y, game);
+                    car.setId(carId);
+                    car.setSpeed(speed);
+                    car.setAngle((float) angle);
+                    car.setTurnAmount((float) turnAmount);
+                    car.setSpeedState(SpeedStates.valueOf((String) carMap.get(ProtocolMessages.CAR_SPEED_STATE)));
+                    car.setTurnState(TurnStates.valueOf((String) carMap.get(ProtocolMessages.CAR_TURN_STATE)));
+                    game.addNewCarFromServer(car);
+                }
+                gameView.postInvalidate();
+                Log.d(ServerActivity.TAG, "carMap x: " + carMap.get("x") + " y: " + carMap.get("y"));
+            }
         }
     }
 }

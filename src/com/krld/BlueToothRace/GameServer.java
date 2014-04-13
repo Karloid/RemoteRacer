@@ -161,6 +161,7 @@ public class GameServer {
                         car = gameMain.createNewCar();
                         id = car.getId();
                         log("Created car");
+                        sendNewCarId(car);
                         break;
                     } else {
                         log("Break connection on wait user create car");
@@ -170,7 +171,6 @@ public class GameServer {
 
                 while (true) {
                     String str = in.readLine();
-                    sendMessage("OK");
 
                     if (str != null) {
                         log("Received message: " + str);
@@ -203,6 +203,26 @@ public class GameServer {
             }
         }
 
+        private void sendNewCarId(Car car) {
+            Gson gson = new Gson();
+            String message = "{";
+            message += " \"" + ProtocolMessages.HEADER +  "\" : \""  + ProtocolMessages.HEADER_NEW_CAR + "\",";
+
+            HashMap<String, Object> carParams = new HashMap<String, Object>();
+            carParams.put(ProtocolMessages.CAR_ID, car.getId());
+            carParams.put(ProtocolMessages.CAR_POS_X, car.pos.getX());
+            carParams.put(ProtocolMessages.CAR_POS_Y, car.pos.getY());
+            carParams.put(ProtocolMessages.CAR_SPEED, car.getSpeed());
+            carParams.put(ProtocolMessages.CAR_ANGLE, car.getAngle());
+            carParams.put(ProtocolMessages.CAR_TURN_AMOUNT, car.getTurnAmount());
+
+            carParams.put(ProtocolMessages.CAR_SPEED_STATE, car.getSpeedState());
+            carParams.put(ProtocolMessages.CAR_TURN_STATE, car.getTurnState());
+            message += "\"" + ProtocolMessages.CAR + "\" : " + gson.toJson(carParams);
+            message += "}";
+            sendMessage(message);
+        }
+
         private void sendCarsToClient(Car car) {
             Gson gson = new Gson();
             String message;
@@ -212,9 +232,16 @@ public class GameServer {
             ArrayList<HashMap<String, Object>> cars = new ArrayList<HashMap<String, Object>>();
             for (Car itCar : gameMain.getCars()) {
                 HashMap<String, Object> carParams = new HashMap<String, Object>();
-                carParams.put("id", itCar.getId());
-                carParams.put("x", itCar.pos.getX());
-                carParams.put("y", itCar.pos.getY());
+                carParams.put(ProtocolMessages.CAR_ID, itCar.getId());
+                carParams.put(ProtocolMessages.CAR_POS_X, itCar.pos.getX());
+                carParams.put(ProtocolMessages.CAR_POS_Y, itCar.pos.getY());
+                carParams.put(ProtocolMessages.CAR_SPEED, itCar.getSpeed());
+                carParams.put(ProtocolMessages.CAR_ANGLE, itCar.getAngle());
+                carParams.put(ProtocolMessages.CAR_TURN_AMOUNT, itCar.getTurnAmount());
+
+                carParams.put(ProtocolMessages.CAR_SPEED_STATE, itCar.getSpeedState());
+                carParams.put(ProtocolMessages.CAR_TURN_STATE, itCar.getTurnState());
+
                 cars.add(carParams);
 
             }
@@ -232,7 +259,7 @@ public class GameServer {
             if (socket != null && !socket.isClosed()) {
                 // BufferedWriter out = null;
                 try {
-                    Log.e(ServerActivity.TAG, "Try send: " + message + " to socket");
+                    Log.d(ServerActivity.TAG, "Try send: " + message + " to socket");
                     if (out == null) {
                         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                     }

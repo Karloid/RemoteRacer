@@ -15,6 +15,7 @@ public class Game {
     private Car localCar;
     private List<Car> cars;
     private long id = 0;
+    private Car mainCar;
 
     public Game() {
         setLocalCar(new Car(0, 0, this));
@@ -64,7 +65,6 @@ public class Game {
     }
 
 
-
     public Car createNewCar() {
 
         Car car = new Car(localCar.pos.getX(), localCar.pos.getY(), this);
@@ -83,5 +83,26 @@ public class Game {
     public long getNextEntityId() {
         id++;
         return id;
+    }
+
+    public Car getCarById(long carId) {
+        for (Car car : cars) {
+            if (car.getId() == carId) {
+                return car;
+            }
+        }
+        return null;
+    }
+
+    public void addNewCarFromServer(Car car) {
+        cars.add(car);
+    }
+
+    public Car getMainCar() {
+        return mainCar;
+    }
+
+    public void setMainCar(Car mainCar) {
+        this.mainCar = mainCar;
     }
 }

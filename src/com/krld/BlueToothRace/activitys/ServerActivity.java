@@ -21,7 +21,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-
+@Deprecated
 public class ServerActivity extends Activity {
     public static final int DELAY = 30;
     public static final int VIEW_WIDTH = 760;
