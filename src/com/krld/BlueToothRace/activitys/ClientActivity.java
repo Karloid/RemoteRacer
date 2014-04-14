@@ -189,7 +189,7 @@ public class ClientActivity extends Activity {
         });
     }
 
-    private void sendMessage(String message) {
+    private boolean sendMessage(String message) {
    //     Log.i(ServerActivity.TAG, "Try send message from client");
         if (socket != null && !socket.isClosed()) {
             try {
@@ -199,6 +199,7 @@ public class ClientActivity extends Activity {
                 }
                 out.append(message + "\n");
                 out.flush();
+                return  true;
                 //    out.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -207,6 +208,7 @@ public class ClientActivity extends Activity {
         } else {
             Log.e(ServerActivity.TAG, "socket is null or closed");
         }
+        return false;
     }
 
     private class ConnectionInputHandler implements Runnable {
