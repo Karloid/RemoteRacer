@@ -26,7 +26,7 @@ public class Car {
     private TurnStates turnState;
     private double turnAmount;
 
-    public Car(int x, int y, Game context) {
+    public Car(double x, double y, Game context) {
         this.context = context;
         id = context.getNextEntityId();
 
@@ -43,11 +43,11 @@ public class Car {
     }
 
     public void update() {
-        //  pos.setX((int) (pos.getX() + speed));
+        //  pos.setX((int) (pos.getXIntValue() + speed));
         calculateSpeed();
         calculateAngle();
-        pos.setX((int) (pos.getX() + speed * Math.cos(angle / 180 * Math.PI)));
-        pos.setY((int) (pos.getY() + speed * Math.sin(angle / 180 * Math.PI)));
+        pos.setX((pos.getXIntValue() + speed * Math.cos(angle / 180 * Math.PI)));
+        pos.setY((pos.getYIntValue() + speed * Math.sin(angle / 180 * Math.PI)));
         reduceSpeed();
         reduceAngleDeltaAmount();
         //    testAngle();

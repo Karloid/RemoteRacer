@@ -34,10 +34,6 @@ public class WorldRenderer {
         }
         drawTiles(game, canvas, paint, cameraCenterPos);
         for (Car car : game.getCars()) {
-            drawLineBetweenCars(game.getLocalCar(), car, cameraCenterPos, canvas, paint);
-        }
-     //   drawCar(game.getLocalCar(), canvas, paint, cameraCenterPos, blueCarSprite);
-        for (Car car : game.getCars()) {
             drawCar(car, canvas, paint, cameraCenterPos, redCarSprite);
         }
     }
@@ -45,17 +41,17 @@ public class WorldRenderer {
     private static void drawLineBetweenCars(Car car1, Car car2, Point cameraCenterPos, Canvas canvas, Paint paint) {
         paint.setColor(Color.RED);
         paint.setStrokeWidth(2);
-        canvas.drawLine(car1.pos.getX() - cameraCenterPos.getX() + viewWidth / 2,
-                car1.pos.getY() - cameraCenterPos.getY() + viewHeight / 2,
-                car2.pos.getX() - cameraCenterPos.getX() + viewWidth / 2,
-                car2.pos.getY() - cameraCenterPos.getY() + viewHeight / 2, paint);
+        canvas.drawLine(car1.pos.getXIntValue() - cameraCenterPos.getXIntValue() + viewWidth / 2,
+                car1.pos.getYIntValue() - cameraCenterPos.getYIntValue() + viewHeight / 2,
+                car2.pos.getXIntValue() - cameraCenterPos.getXIntValue() + viewWidth / 2,
+                car2.pos.getYIntValue() - cameraCenterPos.getYIntValue() + viewHeight / 2, paint);
 
     }
 
     public static void drawCar(Car car, Canvas canvas, Paint paint, Point cameraCenterPos, Bitmap carSprite) {
         Utils.drawBitmapRotate(carSprite,
-                car.pos.getX() - cameraCenterPos.getX() + viewWidth / 2 - blueCarSprite.getWidth() / 2,
-                car.pos.getY() - cameraCenterPos.getY() + viewHeight / 2 - blueCarSprite.getHeight() / 2, car.getAngle() + 90, canvas, paint);
+                car.pos.getXIntValue() - cameraCenterPos.getXIntValue() + viewWidth / 2 - blueCarSprite.getWidth() / 2,
+                car.pos.getYIntValue() - cameraCenterPos.getYIntValue() + viewHeight / 2 - blueCarSprite.getHeight() / 2, car.getAngle() + 90, canvas, paint);
     }
 
     private static void drawTiles(Game game, Canvas canvas, Paint paint, Point pos) {
@@ -63,11 +59,11 @@ public class WorldRenderer {
         int scaledY;
         for (int x = 0; x < game.FIELD_SIZE; x++) {
             for (int y = 0; y < game.FIELD_SIZE; y++) {
-                scaledX = x * game.getCellSize() - game.getCellSize() / 2 - pos.getX() + viewWidth / 2;
+                scaledX = x * game.getCellSize() - game.getCellSize() / 2 - pos.getXIntValue() + viewWidth / 2;
                 if (scaledX > viewWidth || scaledX < -64) {
                     continue;
                 }
-                scaledY = y * game.getCellSize() - game.getCellSize() / 2 - pos.getY() + viewHeight / 2;
+                scaledY = y * game.getCellSize() - game.getCellSize() / 2 - pos.getYIntValue() + viewHeight / 2;
                 if (scaledY > viewHeight || scaledY < -64) {
                     continue;
                 }

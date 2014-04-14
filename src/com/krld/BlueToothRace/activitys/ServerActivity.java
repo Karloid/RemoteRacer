@@ -73,7 +73,7 @@ public class ServerActivity extends Activity {
         ImageButton turnLeftButton = (ImageButton) findViewById(R.id.turnLeftButton);
         ImageButton turnRightButton = (ImageButton) findViewById(R.id.turnRightButton);
 
-
+           /*
         increaseSpeedButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -119,7 +119,7 @@ public class ServerActivity extends Activity {
                 }
                 return false;
             }
-        });
+        });   */
     }
 
     private void startSocketServer() {
@@ -259,7 +259,6 @@ public class ServerActivity extends Activity {
 
                     if (str != null) {
                         log("Received message: " + str);
-
                         if (str.equals(ProtocolMessages.INCREASE_SPEED)) {
                             car.increaseSpeed();
                         } else if (str.equals(ProtocolMessages.STILL_SPEED)) {

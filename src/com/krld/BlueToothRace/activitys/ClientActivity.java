@@ -190,10 +190,10 @@ public class ClientActivity extends Activity {
     }
 
     private void sendMessage(String message) {
-        Log.i(ServerActivity.TAG, "Try send message from client");
+   //     Log.i(ServerActivity.TAG, "Try send message from client");
         if (socket != null && !socket.isClosed()) {
             try {
-                Log.e(ServerActivity.TAG, "Try send: " + message + " to socket");
+     //           Log.e(ServerActivity.TAG, "Try send: " + message + " to socket");
                 if (out == null) {
                     out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 }
@@ -201,6 +201,7 @@ public class ClientActivity extends Activity {
                 out.flush();
                 //    out.close();
             } catch (IOException e) {
+                e.printStackTrace();
                 Log.e(ServerActivity.TAG, "Send message FAILED:" + e.getMessage());
             }
         } else {
@@ -279,8 +280,8 @@ public class ClientActivity extends Activity {
             for (Map carMap : (List<Map>) root.get(ProtocolMessages.CARS)) {
                 long carId = Math.round((Double) carMap.get("id"));
                 Car car = game.getCarById(carId);
-                Integer x = ((Double) carMap.get("x")).intValue();
-                Integer y = ((Double) carMap.get("y")).intValue();
+                Double x = ((Double) carMap.get(ProtocolMessages.CAR_POS_X));
+                Double y = ((Double) carMap.get(ProtocolMessages.CAR_POS_Y));
 
                 double speed = (Double)carMap.get(ProtocolMessages.CAR_SPEED);
                 double angle = ((Double)carMap.get(ProtocolMessages.CAR_ANGLE));
@@ -304,7 +305,7 @@ public class ClientActivity extends Activity {
                     game.addNewCarFromServer(car);
                 }
                 gameView.postInvalidate();
-                Log.d(ServerActivity.TAG, "carMap x: " + carMap.get("x") + " y: " + carMap.get("y"));
+          //      Log.d(ServerActivity.TAG, "carMap x: " + carMap.get("x") + " y: " + carMap.get("y"));
             }
         }
     }

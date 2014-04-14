@@ -35,7 +35,7 @@ public class Utils {
     }
 
     public static double getDistance(com.krld.BlueToothRace.model.Point point1, Point point2) {
-        return getDistance(point1.getX(), point1.getY(), point2.getX(), point2.getY());
+        return getDistance(point1.getXIntValue(), point1.getYIntValue(), point2.getXIntValue(), point2.getYIntValue());
     }
 
     public static double getDistance(float x1, float y1, float x2, float y2) {

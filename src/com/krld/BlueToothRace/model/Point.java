@@ -4,27 +4,35 @@ package com.krld.BlueToothRace.model;
  * Created by 3 on 28.01.14.
  */
 public class Point {
-    private  int y;
-    private  int x;
+    private double y;
+    private double x;
 
-    public Point(int x, int y) {
+    public Point(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
+    public double getY() {
         return y;
     }
 
-    public void setY(int y) {
+    public double getX() {
+        return x;
+    }
+
+    public int getXIntValue() {
+        return (int)x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public int getYIntValue() {
+        return (int)y;
+    }
+
+    public void setY(double y) {
         this.y = y;
     }
 }

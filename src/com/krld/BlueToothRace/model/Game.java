@@ -12,15 +12,15 @@ public class Game {
     private final int cellSize = 64;
     public TileType[][] tiles;
 
-    private Car localCar;
     private List<Car> cars;
     private long id = 0;
     private Car mainCar;
+    private Point startPoint;
 
     public Game() {
-        setLocalCar(new Car(0, 0, this));
         generateTiles();
         cars = new ArrayList<Car>();
+        startPoint = new Point(100,100);
     }
 
     private void generateTiles() {
@@ -41,16 +41,9 @@ public class Game {
         }
     }
 
-    public Car getLocalCar() {
-        return localCar;
-    }
 
-    public void setLocalCar(Car localCar) {
-        this.localCar = localCar;
-    }
 
     public void update() {
-        localCar.update();
         for (Car car : cars) {
             car.update();
         }
@@ -67,7 +60,7 @@ public class Game {
 
     public Car createNewCar() {
 
-        Car car = new Car(localCar.pos.getX(), localCar.pos.getY(), this);
+        Car car = new Car(startPoint.getXIntValue(), startPoint.getYIntValue(), this);
         cars.add(car);
         return car;
     }

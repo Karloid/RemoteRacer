@@ -206,12 +206,12 @@ public class GameServer {
         private void sendNewCarId(Car car) {
             Gson gson = new Gson();
             String message = "{";
-            message += " \"" + ProtocolMessages.HEADER +  "\" : \""  + ProtocolMessages.HEADER_NEW_CAR + "\",";
+            message += " \"" + ProtocolMessages.HEADER + "\" : \"" + ProtocolMessages.HEADER_NEW_CAR + "\",";
 
             HashMap<String, Object> carParams = new HashMap<String, Object>();
             carParams.put(ProtocolMessages.CAR_ID, car.getId());
-            carParams.put(ProtocolMessages.CAR_POS_X, car.pos.getX());
-            carParams.put(ProtocolMessages.CAR_POS_Y, car.pos.getY());
+            carParams.put(ProtocolMessages.CAR_POS_X, car.pos.getXIntValue());
+            carParams.put(ProtocolMessages.CAR_POS_Y, car.pos.getYIntValue());
             carParams.put(ProtocolMessages.CAR_SPEED, car.getSpeed());
             carParams.put(ProtocolMessages.CAR_ANGLE, car.getAngle());
             carParams.put(ProtocolMessages.CAR_TURN_AMOUNT, car.getTurnAmount());
@@ -255,11 +255,11 @@ public class GameServer {
         }
 
         private void sendMessage(String message) {
-            Log.i(ServerActivity.TAG, "Try send message: " + message);
+       //     Log.i(ServerActivity.TAG, "Try send message: " + message);
             if (socket != null && !socket.isClosed()) {
                 // BufferedWriter out = null;
                 try {
-                    Log.d(ServerActivity.TAG, "Try send: " + message + " to socket");
+             //       Log.d(ServerActivity.TAG, "Try send: " + message + " to socket");
                     if (out == null) {
                         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                     }
@@ -267,6 +267,7 @@ public class GameServer {
                     out.flush();
                     //           out.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                     Log.e(ServerActivity.TAG, "Send message FAILED:" + e.getMessage());
                 }
             } else {
