@@ -1,18 +1,26 @@
 package com.krld.BlueToothRace;
 
+import android.app.Activity;
 import android.graphics.*;
 import android.content.res.*;
 import android.graphics.BitmapFactory.*;
+import android.util.Log;
+import com.krld.BlueToothRace.activitys.ServerActivity;
 import com.krld.BlueToothRace.model.Point;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Utils {
 
-    public static Bitmap loadSprite(int rawFile, Resources resources, int scale) {
+    public static Bitmap loadSprite(int rawFileId, Resources resources, int scale, String textureName) {
         Options options = new
                 BitmapFactory.Options();
         options.inScaled = false;
         Bitmap sprite;
-        sprite = BitmapFactory.decodeResource(resources, rawFile, options);
+        sprite = BitmapFactory.decodeResource(resources, rawFileId, options);
+        Log.d(ServerActivity.TAG, "textureName: " + textureName);
         sprite = Bitmap.createScaledBitmap(sprite, sprite.getWidth() * scale, sprite.getHeight() * scale, false);
         return sprite;
     }
@@ -55,5 +63,30 @@ public class Utils {
 
     public static boolean userIsAMonkey() {
         return true;
+    }
+
+    public static String readFile(String fileName) {
+        String string = "";
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(fileName));
+            while (true) {
+                String line = br.readLine();
+                if (line == null) {
+                    break;
+                }
+                string += line;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return string;
     }
 }

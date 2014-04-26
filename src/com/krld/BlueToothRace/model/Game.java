@@ -1,5 +1,11 @@
 package com.krld.BlueToothRace.model;
 
+import android.app.Activity;
+import android.view.animation.AccelerateInterpolator;
+import com.krld.BlueToothRace.MapManager;
+import com.krld.BlueToothRace.TileType;
+import com.krld.BlueToothRace.activitys.ClientActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,23 +14,35 @@ import java.util.List;
  */
 public class Game {
 
-    public static final int FIELD_SIZE = 50;
     private final int cellSize = 64;
-    public TileType[][] tiles;
+    private final Activity activity;
 
     private List<Car> cars;
     private long id = 0;
     private Car mainCar;
     private Point startPoint;
+    private MapManager mapManager;
+    private int[][] tiles;
 
-    public Game() {
+    public Game(Activity activity) {
+        this.activity = activity;
+        initMap();
         generateTiles();
         cars = new ArrayList<Car>();
         startPoint = new Point(100,100);
     }
 
+    private void initMap() {
+        mapManager = new MapManager(activity);
+        //   tiles = mapManager.getRandomizeTiles(WIDTH, HEIGHT);
+        //  tiles = mapManager.loadMapFromFile("mapHouses.json");
+        // tiles = mapManager.loadMapFromFile("mapHouseDoor.json");
+        //tiles = mapManager.loadMapFromFile("water_house_test.json");
+        tiles = mapManager.loadMapFromFile("river.json");
+    }
+   @Deprecated
     private void generateTiles() {
-        tiles = new TileType[FIELD_SIZE][FIELD_SIZE];
+       /* tiles = new TileType[FIELD_SIZE][FIELD_SIZE];
         for (int x = 0; x < FIELD_SIZE; x++) {
             for (int y = 0; y < FIELD_SIZE; y++) {
                 double random = Math.random();
@@ -38,7 +56,7 @@ public class Game {
                     tiles[x][y] = TileType.GRASS4;
                 }
             }
-        }
+        }*/
     }
 
 
@@ -49,7 +67,7 @@ public class Game {
         }
     }
 
-    public TileType[][] getTiles() {
+    public int[][] getTiles() {
         return tiles;
     }
 
@@ -97,5 +115,9 @@ public class Game {
 
     public void setMainCar(Car mainCar) {
         this.mainCar = mainCar;
+    }
+
+    public MapManager getMapManager() {
+        return mapManager;
     }
 }

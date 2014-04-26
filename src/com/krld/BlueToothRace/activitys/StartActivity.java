@@ -49,7 +49,7 @@ public class StartActivity extends Activity {
 
     private void startServerAndConnectHim() {
         if (gameServer == null) {
-            gameServer = new GameServer();
+            gameServer = new GameServer(this);
             gameServer.init();
             gameServer.run();
         }

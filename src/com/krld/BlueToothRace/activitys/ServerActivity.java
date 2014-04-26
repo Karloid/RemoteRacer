@@ -3,8 +3,6 @@ package com.krld.BlueToothRace.activitys;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import com.krld.BlueToothRace.ProtocolMessages;
@@ -46,7 +44,7 @@ public class ServerActivity extends Activity {
         setContentView(R.layout.server);
 
         if (gameServer == null) {
-            gameServer = new Game();
+            gameServer = new Game(this);
         }
         gameView = new GameView(this, gameServer);
 

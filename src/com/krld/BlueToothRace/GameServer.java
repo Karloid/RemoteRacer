@@ -1,8 +1,10 @@
 package com.krld.BlueToothRace;
 
+import android.app.Activity;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.krld.BlueToothRace.activitys.ServerActivity;
+import com.krld.BlueToothRace.activitys.StartActivity;
 import com.krld.BlueToothRace.model.Car;
 import com.krld.BlueToothRace.model.Game;
 
@@ -23,6 +25,7 @@ public class GameServer {
     public static final int VIEW_HEIGHT = 950;
     public static final int SERVER_SOCKETY_PORT = 7777;
     public static final String TAG = "MY_RACE";
+    private final Activity activity;
     private boolean paused;
     private static Game gameMain;
     private static Thread runner;
@@ -30,6 +33,10 @@ public class GameServer {
     private static Runnable serverRunnable;
     private static Thread serverSocketThread;
     private static List<Thread> connections;
+
+    public GameServer(Activity activity) {
+        this.activity = activity;
+    }
 
     public Socket getLocalSocket() {
         return null;
@@ -40,7 +47,7 @@ public class GameServer {
     public void init() {
 
         if (gameMain == null) {
-            gameMain = new Game();
+            gameMain = new Game(activity);
         }
 
         startSocketServer();

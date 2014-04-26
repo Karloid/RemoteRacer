@@ -125,7 +125,7 @@ public class ClientActivity extends Activity {
 
     private void initGameView() {
         final LinearLayout layout = (LinearLayout) findViewById(R.id.clientlayoutgameview);
-        game = new Game();
+        game = new Game(this);
         gameView = new GameView(this, game);
         layout.addView(gameView);
         gameView.setLayoutParams(new LinearLayout.LayoutParams(ServerActivity.VIEW_WIDTH, ServerActivity.VIEW_HEIGHT));
