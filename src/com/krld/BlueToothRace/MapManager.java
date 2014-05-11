@@ -59,7 +59,7 @@ public class MapManager {
     }
 
     public TileType getTileTypeByName(String name) {
-      /*  for (TileType tileType : tileTypes) {
+      /*  for (TileType tileType : tiletypes1) {
             if (tileType.getName().equals(name)) {
                 return tileType;
             }
@@ -91,7 +91,8 @@ public class MapManager {
             init();
         }
         //  String jsonMapString = Utils.readFile("maps/" + fileName);
-        InputStream iFile = activity.getResources().openRawResource(R.raw.river);
+      //  InputStream iFile = activity.getResources().openRawResource(R.raw.river);
+        InputStream iFile = activity.getResources().openRawResource(R.raw.bigracemap);
         String jsonMapString = inputStreamToString(iFile);
         Map root = new Gson().fromJson(jsonMapString, Map.class);
         System.out.println("DEBUG INFO: " + root.get("tiles").getClass());
