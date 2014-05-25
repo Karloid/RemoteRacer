@@ -7,12 +7,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Toast;
 import com.krld.BlueToothRace.GameServer;
 import com.krld.BlueToothRace.R;
+import com.krld.BlueToothRace.gdx.GdxClientLauncher;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -23,6 +24,7 @@ public class StartActivity extends Activity {
     private Button startClient;
     public static Socket connectedSocket;
     private GameServer gameServer;
+    private CheckBox useGdxClientCheckBox;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,8 @@ public class StartActivity extends Activity {
                 StartActivity.this.startActivity(myIntent);
             }
         });
+
+        useGdxClientCheckBox = (CheckBox) findViewById(R.id.gdxClientCheckBox);
     }
 
     private void startServerAndConnectHim() {
@@ -70,7 +74,7 @@ public class StartActivity extends Activity {
             String ip = "127.0.0.1";
             Socket socket = null;
             try {
-              //  ip = InetAddress.getLocalHost().toString();
+                //  ip = InetAddress.getLocalHost().toString();
              /*   if (socketClient != null && socketClient.isConnected()) {
                     Log.d(TAG, "try close socketClient");
                     socketClient.close();
@@ -90,11 +94,23 @@ public class StartActivity extends Activity {
         @Override
         protected void onPostExecute(Socket socket) {
             if (socket != null) {
-                Intent myIntent = new Intent(StartActivity.this, ClientActivity.class);
-                myIntent.putExtra("from", "StartActivity");
-                connectedSocket = socket;
-                showToast("connected");
-                StartActivity.this.startActivity(myIntent);
+
+                if (!useGdxClientCheckBox.isChecked()) {
+                    Intent myIntent;
+                    myIntent = new Intent(StartActivity.this, StandartClientActivity.class);
+                    myIntent.putExtra("from", "StartActivity");
+                    connectedSocket = socket;
+                    showToast("connected");
+                    StartActivity.this.startActivity(myIntent);
+                } else {
+                    Intent myIntent;
+                    myIntent = new Intent(StartActivity.this, GdxClientLauncher.class);
+                    myIntent.putExtra("from", "StartActivity");
+                    connectedSocket = socket;
+                    showToast("connected");
+                    StartActivity.this.startActivity(myIntent);
+                }
+
             } else {
                 showToast("Not connected!");
             }

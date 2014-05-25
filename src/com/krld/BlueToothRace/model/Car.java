@@ -32,7 +32,7 @@ public class Car {
 
         pos = new Point(x, y);
         angle = 0;
-        speed = 0;
+        speed = MAX_SPEED_FORWARD;
         color = Color.RED;
         speedState = SpeedStates.STILL;
         turnState = TurnStates.STILL;

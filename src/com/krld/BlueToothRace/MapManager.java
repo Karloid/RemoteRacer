@@ -2,6 +2,9 @@ package com.krld.BlueToothRace;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.google.gson.Gson;
 
 import java.io.InputStream;
@@ -15,6 +18,7 @@ import java.util.*;
 // cmd command for rename
 // for /f "Tokens=*" %f in ('dir /l/b/a-d') do (rename "%f" "%f")
 public class MapManager {
+    private static final int GDX_TEXTURE_SIZE = 32;
     private final Activity activity;
     private boolean inited = false;
     public static Map<Integer, TileType> tileTypes;
@@ -116,5 +120,18 @@ public class MapManager {
 
     public int getMapHeight() {
         return mapHeight;
+    }
+
+    private TextureRegion loadTextureRegion(String fileName, int width, int height) {
+        Texture texture = new Texture(Gdx.files.internal(fileName.toLowerCase()));
+        return new TextureRegion(texture, 0, 0, width, height);
+    }
+
+    public void loadGdxTextures() {
+        for (Map.Entry<Integer, TileType> entry : tileTypes.entrySet()) {
+            TileType tileType = entry.getValue();
+            tileType.setGdxTextureRegion(loadTextureRegion(tileType.getTexture(), GDX_TEXTURE_SIZE,GDX_TEXTURE_SIZE));
+        }
+
     }
 }

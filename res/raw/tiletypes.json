@@ -136,7 +136,7 @@
             "wsw" : "FOREST",                                "ese" : "GRASS",
             "ssw" : "FOREST", "sse" : "GRASS"},
 
-        {"id" : 84, "name" : "FOREST_TO_GRASS_LITTLE_CORNER_RT",            "texture" : "forest_to_grass_little_corner_Rb.png", "tags" :["FOREST", "GRASS"],   "nnw" : "FOREST",  "nne" : "GRASS",
+        {"id" : 84, "name" : "FOREST_TO_GRASS_LITTLE_CORNER_RT",            "texture" : "forest_to_grass_little_corner_rb.png", "tags" :["FOREST", "GRASS"],   "nnw" : "FOREST",  "nne" : "GRASS",
             "wnw" : "FOREST",                                 "ene" : "GRASS",
             "wsw" : "GRASS",                                "ese" : "GRASS",
             "ssw" : "GRASS", "sse" : "GRASS"}

@@ -1,6 +1,7 @@
 package com.krld.BlueToothRace;
 
 import android.graphics.Bitmap;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.Collection;
 
@@ -14,6 +15,11 @@ public class TileType {
     private final String texture;
     private final Collection<String> tags;
     private final Bitmap bitmap;
+    private TextureRegion gdxTextureRegion;
+
+    public TextureRegion getGdxTextureRegion() {
+        return gdxTextureRegion;
+    }
 
     public Collection<String> getTags() {
         return tags;
@@ -46,5 +52,9 @@ public class TileType {
 
     public Bitmap getBitmap() {
         return bitmap;
+    }
+
+    public void setGdxTextureRegion(TextureRegion gdxTextureRegion) {
+        this.gdxTextureRegion = gdxTextureRegion;
     }
 }

@@ -1,10 +1,8 @@
 package com.krld.BlueToothRace.model;
 
 import android.app.Activity;
-import android.view.animation.AccelerateInterpolator;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.krld.BlueToothRace.MapManager;
-import com.krld.BlueToothRace.TileType;
-import com.krld.BlueToothRace.activitys.ClientActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +12,8 @@ import java.util.List;
  */
 public class Game {
 
-    private final int cellSize = 64;
-    private final Activity activity;
+    private final int cellSize = 32;
+    private  Activity activity;
 
     private List<Car> cars;
     private long id = 0;
@@ -30,6 +28,10 @@ public class Game {
         generateTiles();
         cars = new ArrayList<Car>();
         startPoint = new Point(100,100);
+    }
+
+    public Game(int width, int height) {
+
     }
 
     private void initMap() {
@@ -119,5 +121,9 @@ public class Game {
 
     public MapManager getMapManager() {
         return mapManager;
+    }
+
+    public void draw(SpriteBatch batch) {
+
     }
 }

@@ -28,6 +28,7 @@ public class WorldRenderer {
         Point cameraCenterPos;
         if (mainCar != null) {
             cameraCenterPos = mainCar.pos;
+
         } else {
             cameraCenterPos = new Point(0, 0);
         }

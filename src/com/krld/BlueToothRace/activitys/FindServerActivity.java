@@ -115,7 +115,7 @@ public class FindServerActivity extends Activity {
         @Override
         protected void onPostExecute(Socket socket) {
             if (socket != null) {
-                Intent myIntent = new Intent(FindServerActivity.this, ClientActivity.class);
+                Intent myIntent = new Intent(FindServerActivity.this, StandartClientActivity.class);
                 myIntent.putExtra("from", "FindServerActivity");
                 FindServerActivity.connectedSocket = socket;
                 showToast("Connected");
