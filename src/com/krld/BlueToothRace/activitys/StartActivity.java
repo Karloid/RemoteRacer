@@ -76,7 +76,7 @@ public class StartActivity extends Activity {
              /*   if (socketClient != null && socketClient.isConnected()) {
                     Log.d(TAG, "try close socketClient");
                     socketClient.close();
-                }         1 */
+                }       2  1 */
                 Log.d(Constants.TAG, "Try connecting: " + ip);
                 socket = new Socket(ip, Constants.SERVER_SOCKET_PORT);
                 Log.d(Constants.TAG, "succesefull");
