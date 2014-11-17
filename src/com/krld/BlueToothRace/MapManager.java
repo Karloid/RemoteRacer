@@ -2,6 +2,7 @@ package com.krld.BlueToothRace;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.util.Log;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -49,6 +50,7 @@ public class MapManager {
 
     private Bitmap getBitmapByName(String texture) {
         texture = texture.split("\\.")[0].toLowerCase();
+        Log.d(Constants.TAG, "Texture name " + texture);
         return Utils.loadSprite(activity.getResources().getIdentifier(texture, "raw", activity.getPackageName()), activity.getResources(), 2, texture);
     }
 

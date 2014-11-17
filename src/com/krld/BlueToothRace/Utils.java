@@ -5,7 +5,6 @@ import android.graphics.*;
 import android.content.res.*;
 import android.graphics.BitmapFactory.*;
 import android.util.Log;
-import com.krld.BlueToothRace.activitys.ServerActivity;
 import com.krld.BlueToothRace.model.Point;
 
 import java.io.BufferedReader;

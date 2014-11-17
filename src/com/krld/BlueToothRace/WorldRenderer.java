@@ -56,17 +56,19 @@ public class WorldRenderer {
     private static void drawTiles(Game game, Canvas canvas, Paint paint, Point pos) {
         int scaledX;
         int scaledY;
-        for (int x = 0; x < game.getMapManager().getMapWidth(); x++) {
-            for (int y = 0; y < game.getMapManager().getMapHeight(); y++) {
+        double xStart = pos.getX() / game.getCellSize() - 4;
+        double yStart = pos.getY() / game.getCellSize() - 4;
+        for (int x = (int) xStart; x < xStart + 8; x++) {
+            for (int y = (int) yStart; y < yStart + 8; y++) {
                 scaledX = x * game.getCellSize() - game.getCellSize() / 2 - pos.getXIntValue() + viewWidth / 2;
-                if (scaledX > viewWidth || scaledX < -64) {
-                    continue;
-                }
                 scaledY = y * game.getCellSize() - game.getCellSize() / 2 - pos.getYIntValue() + viewHeight / 2;
-                if (scaledY > viewHeight || scaledY < -64) {
-                    continue;
+                int key;
+                if (x >= 0 && x < 20 && y >= 0 && y < 20) {
+                    key = game.getTiles()[x][y];
+                } else {
+                    key = game.getTiles()[0][0];
                 }
-                canvas.drawBitmap(MapManager.tileTypes.get(game.getTiles()[x][y]).getBitmap(), scaledX, scaledY, paint);
+                canvas.drawBitmap(MapManager.tileTypes.get(key).getBitmap(), scaledX, scaledY, paint);
             }
         }
     }
