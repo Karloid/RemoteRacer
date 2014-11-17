@@ -21,7 +21,7 @@ public class Point {
     }
 
     public int getXIntValue() {
-        return (int)x;
+        return (int) x;
     }
 
     public void setX(double x) {
@@ -29,10 +29,14 @@ public class Point {
     }
 
     public int getYIntValue() {
-        return (int)y;
+        return (int) y;
     }
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public Point copy() {
+        return new Point(x, y);
     }
 }

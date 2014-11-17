@@ -19,6 +19,8 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 
+import static com.krld.BlueToothRace.ProtocolMessages.*;
+
 /**
  * Created by Andrey on 4/9/2014.
  */
@@ -54,8 +56,8 @@ public class StandartClientActivity extends Activity {
             socket = StartActivity.connectedSocket;
         }
 
-        sendMessage(ProtocolMessages.CLIENT_REQUEST_CREATE_CAR);
-        sendMessage(ProtocolMessages.CLIENT_REQUEST_CARS);
+        sendMessage(CLIENT_REQUEST_CREATE_CAR);
+        sendMessage(CLIENT_REQUEST_CARS);
 
         initControlButtons();
         initGameView();
@@ -83,7 +85,7 @@ public class StandartClientActivity extends Activity {
                             e.printStackTrace();
                         }
                     }
-                    sendMessage(ProtocolMessages.CLIENT_REQUEST_CARS);
+                    sendMessage(CLIENT_REQUEST_CARS);
                     //Log.e("CAR", "UPDATE");
                     try {
                         Thread.sleep(SYNC_DELAY);
@@ -138,9 +140,9 @@ public class StandartClientActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    sendMessage(ProtocolMessages.INCREASE_SPEED);
+                    sendMessage(INCREASE_SPEED);
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    sendMessage(ProtocolMessages.STILL_SPEED);
+                    sendMessage(STILL_SPEED);
                 }
                 return false;
             }
@@ -152,9 +154,9 @@ public class StandartClientActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    sendMessage(ProtocolMessages.DECREASE_SPEED);
+                    sendMessage(DECREASE_SPEED);
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    sendMessage(ProtocolMessages.STILL_SPEED);
+                    sendMessage(STILL_SPEED);
                 }
                 return false;
             }
@@ -166,9 +168,9 @@ public class StandartClientActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    sendMessage(ProtocolMessages.TURN_LEFT);
+                    sendMessage(TURN_LEFT);
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    sendMessage(ProtocolMessages.NO_TURN);
+                    sendMessage(NO_TURN);
                 }
                 return false;
             }
@@ -180,9 +182,9 @@ public class StandartClientActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    sendMessage(ProtocolMessages.TURN_RIGHT);
+                    sendMessage(TURN_RIGHT);
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    sendMessage(ProtocolMessages.NO_TURN);
+                    sendMessage(NO_TURN);
                 }
                 return false;
             }
@@ -244,66 +246,66 @@ public class StandartClientActivity extends Activity {
 
         private void handleServerMessage(String str) {
             Log.d(Constants.TAG, "client received message: " + str);
-            if (str.equals(ProtocolMessages.OK)) {
+            if (str.equals(OK)) {
                 return;
             }
             Map root = new Gson().fromJson(str, Map.class);
-            String header = (String) root.get(ProtocolMessages.HEADER);
-            if (header.equals(ProtocolMessages.HEADER_GET_CAR)) {
+            String header = (String) root.get(HEADER);
+            if (header.equals(HEADER_GET_CAR)) {
                 handleCarsMessage(root);
-            } else if (header.equals(ProtocolMessages.HEADER_NEW_CAR)) {
+            } else if (header.equals(HEADER_NEW_CAR)) {
                 handleNewCarMessage(root);
             }
         }
 
         private void handleNewCarMessage(Map carMap) {
-            carMap = (Map) carMap.get(ProtocolMessages.CAR);
-            long carId = Math.round((Double) carMap.get("id"));
-            Integer x = ((Double) carMap.get("x")).intValue();
-            Integer y = ((Double) carMap.get("y")).intValue();
+            carMap = (Map) carMap.get(CAR);
+            long carId = Math.round((Double) carMap.get(CAR_ID));
+            Integer x = ((Double) carMap.get(CAR_POS_X)).intValue();
+            Integer y = ((Double) carMap.get(CAR_POS_Y)).intValue();
 
-            double speed = (Double)carMap.get(ProtocolMessages.CAR_SPEED);
-            double angle = ((Double)carMap.get(ProtocolMessages.CAR_ANGLE));
-            double turnAmount = (Double)carMap.get(ProtocolMessages.CAR_TURN_AMOUNT);
+            double speed = (Double)carMap.get(CAR_SPEED);
+            double angle = ((Double)carMap.get(CAR_ANGLE));
+            double turnAmount = (Double)carMap.get(CAR_TURN_AMOUNT);
 
             Car mainCar = new Car(x, y, game);
             mainCar.setId(carId);
             mainCar.setSpeed(speed);
             mainCar.setAngle((float) angle);
             mainCar.setTurnAmount((float) turnAmount);
-            mainCar.setSpeedState(SpeedStates.valueOf((String) carMap.get(ProtocolMessages.CAR_SPEED_STATE)));
-            mainCar.setTurnState(TurnStates.valueOf((String) carMap.get(ProtocolMessages.CAR_TURN_STATE)));
+            mainCar.setSpeedState(SpeedStates.valueOf((String) carMap.get(CAR_SPEED_STATE)));
+            mainCar.setTurnState(TurnStates.valueOf((String) carMap.get(CAR_TURN_STATE)));
             mainCarId = mainCar.getId();
             game.addNewCarFromServer(mainCar);
             game.setMainCar(mainCar);
         }
 
         private void handleCarsMessage(Map root) {
-            for (Map carMap : (List<Map>) root.get(ProtocolMessages.CARS)) {
-                long carId = Math.round((Double) carMap.get("id"));
+            for (Map carMap : (List<Map>) root.get(CARS)) {
+                long carId = Math.round((Double) carMap.get(CAR_ID));
                 Car car = game.getCarById(carId);
-                Double x = ((Double) carMap.get(ProtocolMessages.CAR_POS_X));
-                Double y = ((Double) carMap.get(ProtocolMessages.CAR_POS_Y));
+                Double x = ((Double) carMap.get(CAR_POS_X));
+                Double y = ((Double) carMap.get(CAR_POS_Y));
 
-                double speed = (Double)carMap.get(ProtocolMessages.CAR_SPEED);
-                double angle = ((Double)carMap.get(ProtocolMessages.CAR_ANGLE));
-                double turnAmount = (Double)carMap.get(ProtocolMessages.CAR_TURN_AMOUNT);
+                double speed = (Double)carMap.get(CAR_SPEED);
+                double angle = ((Double)carMap.get(CAR_ANGLE));
+                double turnAmount = (Double)carMap.get(CAR_TURN_AMOUNT);
 
                 if (car != null) {
                     car.pos = new Point(x, y);
                     car.setSpeed(speed);
                     car.setAngle((float) angle);
                     car.setTurnAmount((float) turnAmount);
-                    car.setSpeedState(SpeedStates.valueOf((String) carMap.get(ProtocolMessages.CAR_SPEED_STATE)));
-                    car.setTurnState(TurnStates.valueOf((String) carMap.get(ProtocolMessages.CAR_TURN_STATE)));
+                    car.setSpeedState(SpeedStates.valueOf((String) carMap.get(CAR_SPEED_STATE)));
+                    car.setTurnState(TurnStates.valueOf((String) carMap.get(CAR_TURN_STATE)));
                 } else {
                     car = new Car(x, y, game);
                     car.setId(carId);
                     car.setSpeed(speed);
                     car.setAngle((float) angle);
                     car.setTurnAmount((float) turnAmount);
-                    car.setSpeedState(SpeedStates.valueOf((String) carMap.get(ProtocolMessages.CAR_SPEED_STATE)));
-                    car.setTurnState(TurnStates.valueOf((String) carMap.get(ProtocolMessages.CAR_TURN_STATE)));
+                    car.setSpeedState(SpeedStates.valueOf((String) carMap.get(CAR_SPEED_STATE)));
+                    car.setTurnState(TurnStates.valueOf((String) carMap.get(CAR_TURN_STATE)));
                     game.addNewCarFromServer(car);
                 }
                 gameView.postInvalidate();

@@ -26,8 +26,7 @@ public class WorldRenderer {
         Car mainCar = game.getMainCar();
         Point cameraCenterPos;
         if (mainCar != null) {
-            cameraCenterPos = mainCar.pos;
-
+            cameraCenterPos = mainCar.pos.copy();
         } else {
             cameraCenterPos = new Point(0, 0);
         }
@@ -56,14 +55,16 @@ public class WorldRenderer {
     private static void drawTiles(Game game, Canvas canvas, Paint paint, Point pos) {
         int scaledX;
         int scaledY;
-        double xStart = pos.getX() / game.getCellSize() - 4;
-        double yStart = pos.getY() / game.getCellSize() - 4;
-        for (int x = (int) xStart; x < xStart + 8; x++) {
-            for (int y = (int) yStart; y < yStart + 8; y++) {
+        double xStart = pos.getX() / game.getCellSize() - 6;
+        double yStart = pos.getY() / game.getCellSize() - 8;
+        int gameMapWidth = game.getMapManager().getMapWidth();
+        int gameMapHeight= game.getMapManager().getMapHeight();
+        for (int x = (int) xStart; x < xStart + 14; x++) {
+            for (int y = (int) yStart; y < yStart + 16; y++) {
                 scaledX = x * game.getCellSize() - game.getCellSize() / 2 - pos.getXIntValue() + viewWidth / 2;
                 scaledY = y * game.getCellSize() - game.getCellSize() / 2 - pos.getYIntValue() + viewHeight / 2;
                 int key;
-                if (x >= 0 && x < 20 && y >= 0 && y < 20) {
+                if (x >= 0 && x < gameMapWidth && y >= 0 && y < gameMapHeight) {
                     key = game.getTiles()[x][y];
                 } else {
                     key = game.getTiles()[0][0];
