@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import com.krld.BlueToothRace.model.Point;
-import com.krld.BlueToothRace.activitys.ServerActivity;
 import com.krld.BlueToothRace.model.Car;
 import com.krld.BlueToothRace.model.Game;
 
@@ -73,8 +72,8 @@ public class WorldRenderer {
     }
 
     public static void init(Resources resources) {
-        viewWidth = ServerActivity.VIEW_WIDTH;
-        viewHeight = ServerActivity.VIEW_HEIGHT;
+        viewWidth = Constants.VIEW_WIDTH;
+        viewHeight = Constants.VIEW_HEIGHT;
         blueCarSprite = Utils.loadSprite(R.raw.carblue, resources, 1, "carblue");
         redCarSprite = Utils.loadSprite(R.raw.carred, resources, 1, "carRed");
     }

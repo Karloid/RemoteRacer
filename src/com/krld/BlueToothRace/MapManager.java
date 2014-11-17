@@ -99,7 +99,7 @@ public class MapManager {
         InputStream iFile = activity.getResources().openRawResource(R.raw.bigracemap);
         String jsonMapString = inputStreamToString(iFile);
         Map root = new Gson().fromJson(jsonMapString, Map.class);
-        System.out.println("DEBUG INFO: " + root.get("tiles").getClass());
+        //System.out.println("DEBUG INFO: " + root.get("tiles").getClass());
         mapWidth = (int) Math.round((Double) root.get("width"));
         mapHeight = (int) Math.round((Double) root.get("height"));
         ArrayList<ArrayList<Double>> tilesArrayList = (ArrayList<ArrayList<Double>>) root.get("tiles");

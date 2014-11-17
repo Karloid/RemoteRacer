@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class Game {
 
-    private final int cellSize = 32;
+    private final int cellSize = 64;
     private  Activity activity;
 
     private List<Car> cars;
@@ -44,21 +44,6 @@ public class Game {
     }
    @Deprecated
     private void generateTiles() {
-       /* tiles = new TileType[FIELD_SIZE][FIELD_SIZE];
-        for (int x = 0; x < FIELD_SIZE; x++) {
-            for (int y = 0; y < FIELD_SIZE; y++) {
-                double random = Math.random();
-                if (random > 0.75f) {
-                    tiles[x][y] = TileType.GRASS1;
-                } else if (random > 0.5f) {
-                    tiles[x][y] = TileType.GRASS2;
-                } else if (random > 0.25f) {
-                    tiles[x][y] = TileType.GRASS3;
-                } else if (random > 0f) {
-                    tiles[x][y] = TileType.GRASS4;
-                }
-            }
-        }*/
     }
 
 
@@ -79,7 +64,6 @@ public class Game {
 
 
     public Car createNewCar() {
-
         Car car = new Car(startPoint.getXIntValue(), startPoint.getYIntValue(), this);
         cars.add(car);
         return car;

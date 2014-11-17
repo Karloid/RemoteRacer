@@ -20,7 +20,6 @@ public class Utils {
         options.inScaled = false;
         Bitmap sprite;
         sprite = BitmapFactory.decodeResource(resources, rawFileId, options);
-        Log.d(ServerActivity.TAG, "textureName: " + textureName);
         sprite = Bitmap.createScaledBitmap(sprite, sprite.getWidth() * scale, sprite.getHeight() * scale, false);
         return sprite;
     }

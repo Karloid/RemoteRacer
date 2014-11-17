@@ -3,8 +3,6 @@ package com.krld.BlueToothRace;
 import android.app.Activity;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.krld.BlueToothRace.activitys.ServerActivity;
-import com.krld.BlueToothRace.activitys.StartActivity;
 import com.krld.BlueToothRace.model.Car;
 import com.krld.BlueToothRace.model.Game;
 
@@ -15,16 +13,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.krld.BlueToothRace.Constants.*;
+
 /**
  * Created by Andrey on 4/10/2014.
  */
 public class GameServer {
 
     public static final int DELAY = 30;
-    public static final int VIEW_WIDTH = 760;
-    public static final int VIEW_HEIGHT = 950;
-    public static final int SERVER_SOCKETY_PORT = 7777;
-    public static final String TAG = "MY_RACE";
     private final Activity activity;
     private boolean paused;
     private static Game gameMain;
@@ -45,7 +41,7 @@ public class GameServer {
 
 
     public void init() {
-
+        Log.d(TAG, "Init server");
         if (gameMain == null) {
             gameMain = new Game(activity);
         }
@@ -63,7 +59,7 @@ public class GameServer {
     }
 
     private void startSocketServer() {
-
+        Log.d(TAG, "start socket server");
         if (serverSocketThread == null) {
             serverRunnable = new ServerRunnable();
             serverSocketThread = new Thread(serverRunnable);
@@ -72,6 +68,7 @@ public class GameServer {
     }
 
     private void startGameLoopThread() {
+        Log.d(TAG, "Start server game loop");
         runner = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -109,8 +106,8 @@ public class GameServer {
                     Log.d(TAG, "serverSoscket is closed");
                 }
                 connections = new ArrayList<Thread>();
-                serverSocket = new ServerSocket(SERVER_SOCKETY_PORT);
-                Log.d(TAG, "Server socket started at: " + SERVER_SOCKETY_PORT);
+                serverSocket = new ServerSocket(SERVER_SOCKET_PORT);
+                Log.d(TAG, "Server socket started at: " + SERVER_SOCKET_PORT);
 
                 while (true) {
                     Log.i(TAG, "waiting connections...: ");
@@ -153,7 +150,7 @@ public class GameServer {
         @Override
         public void run() {
             try {
-                log("New input connection handler!");
+                log("New input connection handler! test");
 
                 Car car = null;
 
@@ -164,6 +161,7 @@ public class GameServer {
 
                 while (true) {
                     String str = in.readLine();
+                    log("New input!: " + str);
                     if (str != null && str.equals(ProtocolMessages.CLIENT_REQUEST_CREATE_CAR)) {
                         car = gameMain.createNewCar();
                         id = car.getId();
@@ -171,8 +169,8 @@ public class GameServer {
                         sendNewCarId(car);
                         break;
                     } else {
-                        log("Break connection on wait user create car");
-                        break;
+                        log("Wrong input: " + str);
+                      //  break;
                     }
                 }
 
@@ -258,7 +256,7 @@ public class GameServer {
         }
 
         private void log(String s) {
-            Log.d(ServerActivity.TAG, "ConnectionHandler " + id + " : " + s);
+            Log.d(TAG, "ConnectionHandler " + id + " : " + s);
         }
 
         private void sendMessage(String message) {
@@ -275,10 +273,10 @@ public class GameServer {
                     //           out.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e(ServerActivity.TAG, "Send message FAILED:" + e.getMessage());
+                    Log.e(TAG, "Send message FAILED:" + e.getMessage());
                 }
             } else {
-                Log.e(ServerActivity.TAG, " socket is null");
+                Log.e(TAG, " socket is null");
             }
         }
     }

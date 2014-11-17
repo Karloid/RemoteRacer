@@ -6,20 +6,24 @@
               android:layout_height="match_parent">
 
     <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:text="Server"
             android:id="@+id/startServerButton" android:layout_gravity="center_horizontal"/>
     <Button
             style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:text="Client"
             android:id="@+id/startClientButton" android:layout_gravity="center_horizontal"/>
     <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Use GDX client"
-            android:id="@+id/gdxClientCheckBox" android:layout_gravity="center_horizontal" android:checked="true"
+            android:id="@+id/gdxClientCheckBox"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
             android:enabled="true"/>
 </LinearLayout>

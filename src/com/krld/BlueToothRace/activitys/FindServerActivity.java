@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import com.krld.BlueToothRace.Constants;
 import com.krld.BlueToothRace.R;
 
 import java.io.*;
@@ -100,12 +101,12 @@ public class FindServerActivity extends Activity {
                     Log.d(TAG, "try close socketClient");
                     socketClient.close();
                 }
-                Log.d(ServerActivity.TAG, "Try connecting: " + ip);
-                socket = new Socket(ip, ServerActivity.SERVER_SOCKETY_PORT);
-                Log.d(ServerActivity.TAG, "succesefull");
-                Log.d(ServerActivity.TAG, "send create car request");
+                Log.d(Constants.TAG, "Try connecting: " + ip);
+                socket = new Socket(ip, Constants.SERVER_SOCKET_PORT);
+                Log.d(Constants.TAG, "succesefull");
+                Log.d(Constants.TAG, "send create car request");
             } catch (IOException e) {
-                Log.e(ServerActivity.TAG, "Error connecting: " + ip);
+                Log.e(Constants.TAG, "Error connecting: " + ip);
               // showToast("Error connecting: " + ip + " " + e.getMessage());
                 e.printStackTrace();
             }
@@ -158,9 +159,9 @@ public class FindServerActivity extends Activity {
             Socket socket = new Socket();
             int timeout = 100;
             try {
-                socket.connect(new InetSocketAddress(ip, ServerActivity.SERVER_SOCKETY_PORT), timeout);
+                socket.connect(new InetSocketAddress(ip, Constants.SERVER_SOCKET_PORT), timeout);
                 socket.close();
-                Log.d(ServerActivity.TAG, "FINDED SERVER: " + ip);
+                Log.d(Constants.TAG, "FINDED SERVER: " + ip);
                 return true;
             } catch (IOException e) {
                 return false;

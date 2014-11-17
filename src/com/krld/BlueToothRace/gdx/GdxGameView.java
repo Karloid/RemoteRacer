@@ -2,7 +2,6 @@ package com.krld.BlueToothRace.gdx;
 
 import android.util.Log;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -12,10 +11,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.google.gson.Gson;
 import com.krld.BlueToothRace.ProtocolMessages;
-import com.krld.BlueToothRace.R;
-import com.krld.BlueToothRace.activitys.ServerActivity;
+import com.krld.BlueToothRace.Constants;
 import com.krld.BlueToothRace.model.*;
-import com.krld.BlueToothRace.views.GameView;
 
 import java.io.*;
 import java.net.Socket;
@@ -204,10 +201,10 @@ public class GdxGameView extends ApplicationAdapter {
                 //    out.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(ServerActivity.TAG, "Send message FAILED:" + e.getMessage());
+                Log.e(Constants.TAG, "Send message FAILED:" + e.getMessage());
             }
         } else {
-            Log.e(ServerActivity.TAG, "socket is null or closed");
+            Log.e(Constants.TAG, "socket is null or closed");
         }
         return false;
     }
@@ -235,7 +232,7 @@ public class GdxGameView extends ApplicationAdapter {
         @Override
         public void run() {
             try {
-                Log.d(ServerActivity.TAG, "New input connection handler on client!");
+                Log.d(Constants.TAG, "New input connection handler on client!");
 
                 BufferedReader in = null;
 
@@ -246,13 +243,13 @@ public class GdxGameView extends ApplicationAdapter {
                     if (str != null) {
                         handleServerMessage(str);
                     } else {
-                        Log.d(ServerActivity.TAG, "Break connection on str == null client handler");
+                        Log.d(Constants.TAG, "Break connection on str == null client handler");
                         break;
                     }
                 }
                 in.close();
                 socket.close();
-                Log.d(ServerActivity.TAG, "Connection closed");
+                Log.d(Constants.TAG, "Connection closed");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -260,7 +257,7 @@ public class GdxGameView extends ApplicationAdapter {
         }
 
         private void handleServerMessage(String str) {
-            Log.d(ServerActivity.TAG, "client received message: " + str);
+            Log.d(Constants.TAG, "client received message: " + str);
             if (str.equals(ProtocolMessages.OK)) {
                 return;
             }

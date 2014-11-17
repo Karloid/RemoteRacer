@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
+import com.krld.BlueToothRace.Constants;
 import com.krld.BlueToothRace.GameServer;
 import com.krld.BlueToothRace.R;
 import com.krld.BlueToothRace.gdx.GdxClientLauncher;
@@ -57,10 +58,7 @@ public class StartActivity extends Activity {
             gameServer.init();
             gameServer.run();
         }
-
         new AsyncConnectToServer().execute();
-
-
     }
 
 
@@ -71,20 +69,20 @@ public class StartActivity extends Activity {
             // String ip = strings[0];
 
 
-            String ip = "127.0.0.1";
+            String ip = "localhost";
             Socket socket = null;
             try {
                 //  ip = InetAddress.getLocalHost().toString();
              /*   if (socketClient != null && socketClient.isConnected()) {
                     Log.d(TAG, "try close socketClient");
                     socketClient.close();
-                }          */
-                Log.d(ServerActivity.TAG, "Try connecting: " + ip);
-                socket = new Socket(ip, ServerActivity.SERVER_SOCKETY_PORT);
-                Log.d(ServerActivity.TAG, "succesefull");
-                Log.d(ServerActivity.TAG, "send create car request");
+                }         1 */
+                Log.d(Constants.TAG, "Try connecting: " + ip);
+                socket = new Socket(ip, Constants.SERVER_SOCKET_PORT);
+                Log.d(Constants.TAG, "succesefull");
+                Log.d(Constants.TAG, "send create car request");
             } catch (IOException e) {
-                Log.e(ServerActivity.TAG, "Error connecting: " + ip);
+                Log.e(Constants.TAG, "Error connecting: " + ip);
                 // showToast("Error connecting: " + ip + " " + e.getMessage());
                 e.printStackTrace();
             }

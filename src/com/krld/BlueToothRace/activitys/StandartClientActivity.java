@@ -8,13 +8,13 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import com.google.gson.Gson;
+import com.krld.BlueToothRace.Constants;
 import com.krld.BlueToothRace.ProtocolMessages;
 import com.krld.BlueToothRace.R;
 import com.krld.BlueToothRace.model.*;
 import com.krld.BlueToothRace.views.GameView;
 
 import java.io.*;
-import java.net.PortUnreachableException;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +128,7 @@ public class StandartClientActivity extends Activity {
         game = new Game(this);
         gameView = new GameView(this, game);
         layout.addView(gameView);
-        gameView.setLayoutParams(new LinearLayout.LayoutParams(ServerActivity.VIEW_WIDTH, ServerActivity.VIEW_HEIGHT));
+        gameView.setLayoutParams(new LinearLayout.LayoutParams(Constants.VIEW_WIDTH, Constants.VIEW_HEIGHT));
     }
 
     private void initControlButtons() {
@@ -203,10 +203,10 @@ public class StandartClientActivity extends Activity {
                 //    out.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(ServerActivity.TAG, "Send message FAILED:" + e.getMessage());
+                Log.e(Constants.TAG, "Send message FAILED:" + e.getMessage());
             }
         } else {
-            Log.e(ServerActivity.TAG, "socket is null or closed");
+            Log.e(Constants.TAG, "socket is null or closed");
         }
         return false;
     }
@@ -218,7 +218,7 @@ public class StandartClientActivity extends Activity {
         @Override
         public void run() {
             try {
-                Log.d(ServerActivity.TAG, "New input connection handler on client!");
+                Log.d(Constants.TAG, "New input connection handler on client!");
 
                 BufferedReader in = null;
 
@@ -229,13 +229,13 @@ public class StandartClientActivity extends Activity {
                     if (str != null) {
                         handleServerMessage(str);
                     } else {
-                        Log.d(ServerActivity.TAG, "Break connection on str == null client handler");
+                        Log.d(Constants.TAG, "Break connection on str == null client handler");
                         break;
                     }
                 }
                 in.close();
                 socket.close();
-                Log.d(ServerActivity.TAG, "Connection closed");
+                Log.d(Constants.TAG, "Connection closed");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -243,7 +243,7 @@ public class StandartClientActivity extends Activity {
         }
 
         private void handleServerMessage(String str) {
-            Log.d(ServerActivity.TAG, "client received message: " + str);
+            Log.d(Constants.TAG, "client received message: " + str);
             if (str.equals(ProtocolMessages.OK)) {
                 return;
             }
